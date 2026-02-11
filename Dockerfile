@@ -1,4 +1,4 @@
-# Reproducible environment for Paper 4A (code + LaTeX builds)
+# Reproducible environment for observer-quality paper (code + LaTeX builds)
 FROM python:3.11-slim
 
 # System deps for LaTeX + git + build tools

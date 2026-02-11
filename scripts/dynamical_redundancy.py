@@ -22,7 +22,7 @@ Physics model for decoherence during collective measurement:
     f_coh, collective POVM succeeds) or does not (probability 1-f_coh,
     collective POVM returns a random outcome, P_e = 1/2).
 
-    This is the QD analog of Paper 1's missing-cross-term mechanism:
+    This is the QD analog of the DLN compression model's missing-cross-term mechanism:
     the collective POVM "assumes" coherent fragment states, just as
     Linear-Plus "assumes" no cumulative exposure coupling.  When the
     assumption fails, the measurement output is garbage.

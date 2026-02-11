@@ -32,13 +32,11 @@ This repository accompanies the paper *"Observer Quality as a Resource Variable 
 ├── paper/
 │   ├── preprint/                        # Single-column preprint (PhilSci-Archive)
 │   └── pra/                             # Physical Review A (RevTeX 4.2) submission
-├── dln-compression-model/               # Paper 1: DLN compression model (code + paper)
 ├── scripts/
 │   └── central_spin_example.py          # Central-spin worked example
 ├── tests/                               # Unit tests (bounds, limiting cases)
 ├── notebooks/
 │   └── central_spin_derivations.ipynb   # Numerical cross-checks
-├── notes/                               # Internal drafting notes (provenance)
 ├── figures/                             # Generated figures (via `make figs`)
 └── .github/workflows/                   # CI: tests, figures, LaTeX builds
 ```
@@ -82,15 +80,13 @@ This paper builds on the DLN framework developed across:
 > PsychArchives: [10.23668/psycharchives.21641](https://doi.org/10.23668/psycharchives.21641)
 > Repository: [github.com/aliawu08/dln-emotion-cognition](https://github.com/aliawu08/dln-emotion-cognition)
 
-Paper 1 code and paper source are included in [`dln-compression-model/`](dln-compression-model/).
-
 ---
 
 ## Docker (optional)
 
 ```bash
-docker build -t paper4a .
-docker run --rm -it paper4a bash -lc "make figs && make preprint && make pra"
+docker build -t observer-quality .
+docker run --rm -it observer-quality bash -lc "make figs && make preprint && make pra"
 ```
 
 ---
