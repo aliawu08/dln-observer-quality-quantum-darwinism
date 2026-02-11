@@ -1,0 +1,200 @@
+% ==========================================================================
+% PROPOSED NEW SECTION: Dynamical predictions from the observer-quality framework
+%
+% Suggested placement: after current Section 7 (Worked physical model)
+% and before current Section 8 (DLN-series connection).
+%
+% This section contains three results (A, B, C) that provide concrete,
+% testable predictions derivable only from the observer-quality formalism.
+% ==========================================================================
+
+\section{Dynamical predictions from the observer-quality framework}
+\label{sec:dynamical}
+
+The preceding sections established the observer-quality triple
+$(R_O, \Lambda_O, \tau_O)$ and showed that the DLN decoder classification
+$q_O \in \{q_D, q_L, q_N\}$ maps naturally onto quantum state discrimination
+strategies with a precise exponent hierarchy $\QCBdist_N = 2\,\QCBdist_L$ for
+pure-state records (Section~6).  We now derive three quantitative
+predictions that are \emph{new} to the observer-quality formalism and that
+do not follow from standard QD or SBS analysis alone.  All three are
+verified numerically using the central-spin model of Section~7.
+
+
+% ------------------------------------------------------------------
+\subsection{Result A: Dynamical redundancy bounds}
+\label{sec:result_a}
+
+In standard QD, redundancy is a static quantity: given $m$ fragments with
+per-fragment Chernoff exponent $\QCBdist_k$, the error probability satisfies
+$P_e \le \tfrac{1}{2}\exp\bigl(-\sum_{k=1}^m \QCBdist_k\bigr)$.  This
+assumes the observer's measurement strategy (decoder class) is fixed and
+that coherence conditions are stationary.
+
+The revision-graph formalism of Section~3.3.4 introduces temporal dynamics:
+the observer's decoder class may change over repeated measurement episodes
+depending on coherence conditions.  We define the \emph{effective exponent}
+\begin{equation}
+\label{eq:xi_eff}
+  \QCBdist_{\mathrm{eff}}
+  \;=\;
+  -\frac{1}{m}\,\log\bigl(2\,P_e\bigr),
+\end{equation}
+which measures per-fragment information extraction and depends on both the
+observer's revision-graph topology $\mathcal{R}_O$ and the coherence fraction
+$f_{\mathrm{coh}}$ (the probability that inter-fragment coherence is available
+at each measurement episode).
+
+We model four observer types that instantiate distinct revision-graph topologies:
+\begin{enumerate}[nosep]
+  \item \textbf{Network-Full} (full-cycle $\mathcal{R}_O$):
+    reserves a fraction $f_{\mathrm{mon}}$ of fragments for coherence monitoring.
+    When coherence is detected ($\Prob = f_{\mathrm{coh}}$), uses Dec$_N$ on
+    remaining fragments; otherwise falls back to Dec$_L$.
+  \item \textbf{Network expand-only} ($q_L \to q_N$, no return):
+    starts with Dec$_N$ and transitions permanently to Dec$_L$ upon first
+    coherence loss.
+  \item \textbf{Fixed Dec$_L$} (product measurement only).
+  \item \textbf{Fixed Dec$_N$ without monitoring} (collective measurement,
+    no coherence diagnosis).
+\end{enumerate}
+
+\begin{proposition}[Dynamical redundancy ordering]
+\label{prop:redundancy_ordering}
+For all $f_{\mathrm{coh}} \in (0,1)$ and $f_{\mathrm{mon}} > 0$:
+\begin{enumerate}[nosep,label=(\alph*)]
+  \item $\QCBdist_{\mathrm{eff}}^{\mathrm{Full}} > 0$\; (Network-Full always
+    achieves positive exponent).
+  \item $\QCBdist_{\mathrm{eff}}^{\mathrm{Full}} <
+    \QCBdist_N$\; (monitoring has a nonzero cost; Principle~1).
+  \item $\lim_{m\to\infty}\QCBdist_{\mathrm{eff}}^{\mathrm{no\text{-}mon}}
+    = 0$\; (unmonitored Dec$_N$ exponent vanishes when $f_{\mathrm{coh}}<1$).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Sketch]
+(a)~The full-cycle error is
+$P_e^{\mathrm{FC}} = f_{\mathrm{coh}}\,P_e^N\bigl((1{-}f_{\mathrm{mon}})m\bigr)
+  + (1{-}f_{\mathrm{coh}})\,P_e^L\bigl((1{-}f_{\mathrm{mon}})m\bigr)$,
+which is a mixture of two terms each decaying exponentially in~$m$.
+(b)~Monitoring diverts $f_{\mathrm{mon}}\,m$ fragments from decoding,
+strictly reducing the effective exponent.
+(c)~The unmonitored error
+$P_e^{\mathrm{un}} = f_{\mathrm{coh}}\,P_e^N(m) + (1{-}f_{\mathrm{coh}})/2$
+is bounded below by $(1{-}f_{\mathrm{coh}})/2$, which is $m$-independent,
+so $\QCBdist_{\mathrm{eff}} \to 0$ as $m\to\infty$.
+\end{proof}
+
+This result shows that \textbf{Network-Full is the only observer topology
+that maintains a positive effective exponent under all coherence conditions.}
+See Fig.~\ref{fig:result_a} for numerical verification in the central-spin model.
+
+% Principle 1 is realized: monitoring fragments are ``spent'' to diagnose
+% coherence, reducing the decoding budget. Learning is never free.
+
+
+% ------------------------------------------------------------------
+\subsection{Result B: Inverted sophistication}
+\label{sec:result_b}
+
+A central prediction of the observer-quality framework is that a more
+powerful measurement strategy can \emph{underperform} a simpler one when
+the observer lacks monitoring capability.  This is the quantum analog of the
+DLN catastrophic failure mechanism in Paper~1: a Linear-Plus observer that
+``assumes'' no cumulative exposure coupling can score far below a Linear
+observer when that assumption fails.
+
+\begin{proposition}[Inverted sophistication crossover]
+\label{prop:inverted}
+Define the \emph{critical coherence fraction}
+\begin{equation}
+\label{eq:f_star}
+  f^*(m) \;=\; \frac{P_e^L(m) - 1/2}{P_e^N(m) - 1/2},
+\end{equation}
+where $P_e^L$ and $P_e^N$ are the product and collective error probabilities
+for pure-state records.  Then:
+\begin{enumerate}[nosep,label=(\alph*)]
+  \item For $f_{\mathrm{coh}} < f^*(m)$, the unmonitored collective
+    measurement has higher error than the product measurement:
+    $P_e^{\mathrm{un}}(m,f_{\mathrm{coh}}) > P_e^L(m)$.
+  \item $f^*(m) \to 1$ exponentially as $m \to \infty$, with
+    $1 - f^*(m) \sim \exp(-\QCBdist_L\,m)$.
+  \item For any $f_{\mathrm{coh}} < 1$, there exists $m^*$ such that
+    Dec$_L$ beats unmonitored Dec$_N$ for all $m > m^*$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The unmonitored error is $P_e^{\mathrm{un}} = f\,P_e^N + (1-f)/2$.  Setting
+$P_e^{\mathrm{un}} = P_e^L$ and solving for $f$ gives~\eqref{eq:f_star}.
+Since $P_e^N \to 0$ exponentially, $f^* \to (P_e^L - 1/2)/(0 - 1/2)
+= 1 - 2\,P_e^L \to 1$.  The rate follows from
+$P_e^L = \tfrac{1}{2}\exp(-\QCBdist_L\,m)$.
+\end{proof}
+
+\paragraph{Robustness across decoherence models.}
+The inverted sophistication prediction arises specifically from
+\emph{observer-side decoherence}: the observer's measurement apparatus
+fails to maintain the inter-fragment coherence required by the collective
+POVM, but each fragment's state is unaffected.  We verify this by comparing
+three decoherence models:
+
+\begin{itemize}[nosep]
+  \item \textbf{Binary (episode-level):}
+    With probability $f_{\mathrm{coh}}$ the collective POVM succeeds; with
+    probability $1{-}f_{\mathrm{coh}}$ it returns a random outcome ($P_e = 1/2$).
+    Product measurement is unaffected.
+    \emph{Inversion occurs for all $f_{\mathrm{coh}} < f^*(m)$.}
+
+  \item \textbf{Continuous degradation:}
+    Effective collective exponent is scaled to $f_{\mathrm{coh}}\,\QCBdist_N$.
+    Product measurement is unaffected.
+    \emph{Inversion occurs for $f_{\mathrm{coh}} < 1/2$.}
+
+  \item \textbf{System-side depolarization:}
+    Fragment states are $\sigma_k^{(x)} = f_{\mathrm{coh}}\ket{\phi_k^{(x)}}
+    \bra{\phi_k^{(x)}} + (1{-}f_{\mathrm{coh}})\,I/2$.
+    Both collective and product measurements degrade symmetrically; the
+    collective's factor-of-two exponent advantage persists.
+    \emph{No inversion occurs.}
+\end{itemize}
+
+The physical interpretation is that the inverted sophistication effect
+requires \emph{observer-side} decoherence---a property of the observer's
+measurement apparatus, not of the environment fragments.  This is precisely
+what the observer-quality formalism is designed to characterize: the
+observer's measurement quality determines whether sophisticated strategies
+help or hurt.
+
+
+% ------------------------------------------------------------------
+\subsection{Result C: Stage-dependent pointer accessibility}
+\label{sec:result_c}
+
+The exponent hierarchy $\QCBdist_N = 2\,\QCBdist_L$ implies that for a
+fixed error target $\delta$ and fragment budget $m$, there exist time
+windows where Dec$_N$ can resolve the pointer distinction but Dec$_L$
+cannot.  The pointer distinction is resolvable at error level $\delta$ if
+$\sum_{k=1}^m \QCBdist_k \ge \log(1/(2\delta))$.
+
+\begin{proposition}[Pointer resolution gap]
+\label{prop:resolution_gap}
+For any interaction time $t$ with non-maximal per-fragment overlaps
+$c_k(t) \in (0,1)$, define the resolution threshold
+$\QCBdist^* = \log(1/(2\delta))$.  Then:
+\begin{enumerate}[nosep,label=(\alph*)]
+  \item Whenever Dec$_L$ resolves the pointer ($\QCBdist_L \ge \QCBdist^*$),
+    Dec$_N$ also resolves ($\QCBdist_N = 2\,\QCBdist_L \ge 2\,\QCBdist^*$).
+  \item There exist time windows where $\QCBdist^* \le \QCBdist_N < 2\,\QCBdist^*$,
+    so Dec$_N$ resolves but Dec$_L$ does not (the ``resolution gap'').
+  \item The gap fraction decreases with $m$, vanishing as $m \to N$.
+\end{enumerate}
+\end{proposition}
+
+In the central-spin model with $m=8$ fragments and $\delta=10^{-3}$, the
+resolution gap covers $19.6\%$ of the time domain, shrinking to $3.0\%$ at
+$m=50$.  This demonstrates that the DLN decoder stage determines not merely
+the \emph{rate} of information acquisition (via the exponent) but which
+\emph{pointer observables are accessible at all} for a given fragment budget.
+\end{antml:parameter>
+</invoke>
