@@ -4,6 +4,7 @@
 [![LaTeX Build](https://github.com/aliawu08/observer-quality-quantum-darwinism/actions/workflows/latex.yml/badge.svg)](https://github.com/aliawu08/observer-quality-quantum-darwinism/actions/workflows/latex.yml)
 [![License: MIT](https://img.shields.io/badge/Code-MIT-blue.svg)](LICENSE)
 [![License: CC BY 4.0](https://img.shields.io/badge/Paper-CC_BY_4.0-lightgrey.svg)](LICENSE-CC-BY-4.0)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18609556.svg)](https://doi.org/10.5281/zenodo.18609556)
 
 This repository accompanies the paper *"Observer Quality as a Resource Variable in Quantum Darwinism: &epsilon;-SBS Robustness, Chernoff-Optimal Decoding, and a Central-Spin Worked Example"* (Wu, 2026).
 
@@ -102,7 +103,9 @@ docker run --rm -it paper4a bash -lc "make figs && make preprint && make pra"
             $\varepsilon$-SBS Robustness, Chernoff-Optimal Decoding,
             and a Central-Spin Worked Example},
   author = {Wu, Alia},
-  year   = {2026}
+  year   = {2026},
+  doi    = {10.5281/zenodo.18609556},
+  url    = {https://doi.org/10.5281/zenodo.18609556}
 }
 ```
 
