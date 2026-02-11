@@ -1,6 +1,6 @@
 # Reproducibility
 
-This repository is designed to make Paper 4A fully checkable: figures, bounds, and PDFs can be rebuilt from source.
+This repository is designed to be fully checkable: figures, bounds, and PDFs can be rebuilt from source.
 
 ## Quick start (Python)
 
@@ -18,11 +18,10 @@ make figs
 |------|----------|
 | `paper/preprint/` | Single-column preprint (PhilSci-Archive) |
 | `paper/pra/` | Physical Review A (RevTeX 4.2) submission |
-| `dln-compression-model/` | Paper 1: DLN compression model (code + paper) |
 | `scripts/` | Central-spin worked example script |
 | `tests/` | Unit tests for bounds and limiting cases |
 | `notebooks/` | Numerical cross-checks of analytic expressions |
-| `notes/` | Internal drafting notes (retained for provenance) |
+| `figures/` | Generated figures (via `make figs`) |
 
 ## Figure provenance
 
@@ -54,21 +53,17 @@ make preprint
 make pra
 ```
 
-## DLN compression model (Paper 1)
-
-The `dln-compression-model/` subdirectory contains the code and paper source for Paper 1. See its own [`README.md`](dln-compression-model/README.md) for build and run instructions.
-
 ## Docker (optional)
 
 ```bash
-docker build -t paper4a .
-docker run --rm paper4a
+docker build -t observer-quality .
+docker run --rm observer-quality
 ```
 
 To build PDFs inside the container:
 
 ```bash
-docker run --rm -it paper4a bash -lc "make figs && make preprint && make pra"
+docker run --rm -it observer-quality bash -lc "make figs && make preprint && make pra"
 ```
 
 ## Determinism

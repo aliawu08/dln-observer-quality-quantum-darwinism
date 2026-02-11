@@ -6,7 +6,7 @@ These tests verify mathematical claims that underlie the theoretical framework:
     3. Decision continuity: |Tr(M(rho - sigma))| <= D_tr(rho, sigma) for POVM effects
     4. Numerical regression against seed=2 central-spin values (cross-validation)
 
-Adapted from paper4a_package/tests/run_tests.py; restructured for pytest.
+Restructured for pytest.
 """
 from __future__ import annotations
 
@@ -153,7 +153,7 @@ def _central_spin_best_exponents_seed2(m: int) -> tuple[float, float]:
 
 
 def test_central_spin_regression_seed2():
-    """Cross-validate against paper4a_package numerical outputs (seed=2).
+    """Cross-validate against independently computed numerical outputs (seed=2).
 
     These values were independently computed and match the manuscript's
     'Numerical verification' section.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Central-spin pure-dephasing toy model used in Paper 4A (Observer Quality Formalism).
+Central-spin pure-dephasing toy model for the observer-quality formalism.
 
 We consider a qubit system S interacting with N environment qubits via a controlled-phase
 (pure dephasing) Hamiltonian. Environment qubit k has coupling g_k and starts in |+>.
