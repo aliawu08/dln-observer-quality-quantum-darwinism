@@ -71,7 +71,7 @@ Our main technical contributions are:
 (ii) a data-processing theorem showing that calibration noise (modeled as a CPTP channel) degrades the quantum Chernoff exponent, and
 (iii) an $\varepsilon$-robustness theorem upgrading ideal-SBS sample-complexity bounds to approximate-SBS states with additive error control.
 
-To address ``no concrete physics'' concerns, we provide a fully worked open-system example: a central-spin pure-dephasing model whose conditional fragment states can be computed analytically, yielding explicit formulas for the observer parameters $(R_O,C_O,\tau_O)$ as functions of couplings, readout noise, and acquisition time.
+We ground the formalism in a fully worked open-system example: a central-spin pure-dephasing model whose conditional fragment states can be computed analytically, yielding explicit formulas for the observer parameters $(R_O,C_O,\tau_O)$ as functions of couplings, readout noise, and acquisition time.
 We also highlight a sharp performance gap between collective (coherent) decoding and product-measurement decoding for pure-state records, directly linking \emph{quantum memory horizon} to redundancy.
 Finally, to connect this physics formalism to the DLN observer-quality framework, we introduce a three-state stage index $q_O\in\{q_{\mathrm{D}},q_{\mathrm{L}},q_{\mathrm{N}}\}$ mapping Dot/Linear/Network stages to memoryless, product, and collective decoding classes.
 
@@ -512,7 +512,7 @@ In this model, we treat stability as an explicit constraint rather than assuming
 \subsection{Numerical illustration and reproducibility}
 
 The accompanying repository includes a script that samples couplings $\{g_k\}$, computes $\QCBdist(A;t)$ for the best accessible subset under an access fraction $R_O$, and plots redundancy as a function of time $t$.
-This is included to make the ``worked example'' fully reproducible. Figure~\ref{fig:centralspin-red} shows a typical redundancy profile as a function of interaction time in this toy model.
+This script is provided to ensure full reproducibility of the worked example. Figure~\ref{fig:centralspin-red} shows a typical redundancy profile as a function of interaction time in this toy model.
 
 \begin{figure}[t]\centering
 \includegraphics[width=0.95\linewidth]{central_spin_redundancy_vs_time.png}

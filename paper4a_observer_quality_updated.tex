@@ -69,11 +69,11 @@ Our main technical contributions are:
 (ii) a data-processing theorem showing that calibration noise (modeled as a CPTP channel) degrades the quantum Chernoff exponent, and
 (iii) an $\varepsilon$-robustness theorem upgrading ideal-SBS sample-complexity bounds to approximate-SBS states with additive error control.
 
-To address ``no concrete physics'' concerns, we provide a fully worked open-system example: a central-spin pure-dephasing model whose conditional fragment states can be computed analytically, yielding explicit formulas for the observer parameters $(R_O,C_O,\tau_O)$ as functions of couplings, readout noise, and acquisition time.
+We ground the formalism in a fully worked open-system example: a central-spin pure-dephasing model whose conditional fragment states can be computed analytically, yielding explicit formulas for the observer parameters $(R_O,C_O,\tau_O)$ as functions of couplings, readout noise, and acquisition time.
 We also highlight a sharp performance gap between collective (coherent) decoding and product-measurement decoding for pure-state records, directly linking \emph{quantum memory horizon} to redundancy.
 Finally, to connect this physics formalism to the DLN observer-quality thesis, we introduce a three-state stage index $q_O\in\{q_{\mathrm{D}},q_{\mathrm{L}},q_{\mathrm{N}}\}$ mapping Dot/Linear/Network stages to memoryless, product, and collective decoding classes.
 
-We then prove three DLN-enabled dynamical results about \emph{observer topology} over time: (A) a dynamical redundancy theorem showing that the long-run effective Chernoff exponent depends on the observer's revision topology $\cR_O$, with full-cycle revision achieving the adaptive optimum while expand-only revision collapses permanently to the linear baseline; (B) an ``inverted sophistication'' theorem showing that an \emph{unmonitored} collective decoder can be strictly worse than optimal product decoding below a critical coherence fraction; and (C) a pointer-accessibility proposition formalizing how the DLN stage determines which pointer distinctions are resolvable from a fixed fragment budget, providing an operational basis for observer-designed control of accessible quantum outcomes.
+We then prove three dynamical results about \emph{observer topology} over time: (A) a dynamical redundancy theorem showing that the long-run effective Chernoff exponent depends on the observer's revision topology $\cR_O$, with full-cycle revision achieving the adaptive optimum while expand-only revision collapses permanently to the linear baseline; (B) an ``inverted sophistication'' theorem showing that an \emph{unmonitored} collective decoder can be strictly worse than optimal product decoding below a critical coherence fraction; and (C) a pointer-accessibility proposition formalizing how the DLN stage determines which pointer distinctions are resolvable from a fixed fragment budget, providing an operational basis for observer-designed control of accessible quantum outcomes.
 \end{abstract}
 
 \section{Introduction}
@@ -103,7 +103,7 @@ the actual joint state $\rho_{S\cE}$ is within $\varepsilon$ in trace distance o
 We then push sample-complexity statements through this approximation using data processing and decision-theoretic continuity bounds.
 
 
-\paragraph{What DLN adds here: observer topology over time.}
+\paragraph{Observer topology over time.}
 The quality triple $Q_O$ captures \emph{static} limitations within an episode. However, in realistic QD/SBS protocols the observation model can be non-stationary (e.g., coherence loss across the register, drifting calibration, or regime switching in the environment), so the observer's ability to \emph{revise} its decoding assumptions becomes a second, structurally distinct resource. Borrowing the DLN notion of a revision graph, we introduce an observer-specific revision topology $\cR_O$ over decoder models and quantify how this topology controls the long-run redundancy rate. This yields three new results (Sec.~\ref{sec:observer-topology}): dynamical redundancy as a topological invariant (Result~A), inverted sophistication for unmonitored collective decoding (Result~B), and pointer accessibility as a stage-dependent resolution bound (Result~C).
 
 \section{Related work and positioning}
@@ -502,12 +502,12 @@ If the observer performs collective decoding across $m$ fragments, a quantum mem
 Let $t_{\mathrm{meas}}$ be the per-qubit acquisition time.
 A minimal feasibility constraint is $\tau_O \gtrsim m\,t_{\mathrm{meas}}$.
 Additionally, the pointer value must remain stable over the acquisition interval, typically limited by system relaxation times (e.g., $T_1$) \citep{BreuerPetruccione2002,Schlosshauer2007}.
-In this model, we treat stability as an explicit constraint rather than imposing an unjustified ``exponential stability'' assumption.
+In this model, we treat stability as an explicit constraint rather than assuming exponential pointer stability a priori.
 
 \subsection{Numerical illustration and reproducibility}
 
 The accompanying repository includes a script that samples couplings $\{g_k\}$, computes $\QCBdist(A;t)$ for the best accessible subset under an access fraction $R_O$, and plots redundancy as a function of time $t$.
-This is included to make the ``worked example'' fully reproducible. Figure~\ref{fig:centralspin-red} shows a typical redundancy profile as a function of interaction time in this toy model.
+This script is provided to ensure full reproducibility of the worked example. Figure~\ref{fig:centralspin-red} shows a typical redundancy profile as a function of interaction time in this toy model.
 
 \begin{figure}[t]\centering
 \includegraphics[width=0.95\linewidth]{central_spin_redundancy_vs_time.png}
@@ -650,13 +650,13 @@ which can be arbitrarily small and may be negative if $P_{e}^{\mathrm{stale}}(m;
 \end{theorem}
 
 \begin{remark}[Interpretation]
-Result~A formalizes a DLN-style claim in QD terms: long-run redundancy is not determined solely by within-episode access/calibration/memory, but also by whether the observer can \emph{complete a revision cycle} after a period of operating under an expanded (robust) decoding assumption.
+Result~A establishes that long-run redundancy is not determined solely by within-episode access, calibration, and memory, but also by whether the observer can \emph{complete a revision cycle} after a period of operating under an expanded (robust) decoding assumption.
 The key invariant is topological: the existence of a directed cycle in $\cR_O$ separates observers that can recover high-exponent collective decoding from observers that irreversibly collapse to the linear baseline.
 \end{remark}
 
 \subsection{Result B: inverted sophistication below a critical coherence fraction}
 
-Result~B isolates the counterintuitive regime in which a more ``sophisticated'' collective measurement is strictly worse than product decoding because it is deployed without monitoring (and hence is mismatched to the regime).
+Result~B identifies a regime in which a collective measurement---despite being strictly more powerful under ideal conditions---yields higher error than product decoding when deployed without coherence monitoring.
 
 \begin{theorem}[Inverted sophistication threshold for unmonitored collective decoding]
 \label{thm:inverted-sophistication}
@@ -731,15 +731,10 @@ In this sense, ``einselection'' can be formulated as a constrained optimization 
 
 \section{Discussion: tightness, limitations, and relation to prior work}
 
-We highlight three points relevant for interpreting the bounds and comparing to prior work:
+The main redundancy bound employs Chernoff-optimal decoding \citep{Audenaert2007,NussbaumSzkola2009} and explicitly incorporates calibration via a CPTP contraction theorem (Thm.~\ref{thm:chernoff-dpi}) and $\varepsilon$-SBS perturbations (Thm.~\ref{thm:eps-robust}).
+The local-versus-collective decoding gap (Cor.~\ref{cor:factor-two-gap}) provides a quantitative link between temporal observer constraints and reduced error exponents.
 
-\begin{itemize}[leftmargin=2em]
-\item \textbf{Mathematical depth:} the main redundancy bound is phrased in terms of Chernoff-optimal decoding \citep{Audenaert2007,NussbaumSzkola2009} and explicitly incorporates calibration via a CPTP contraction theorem (Thm.~\ref{thm:chernoff-dpi}) and $\varepsilon$-SBS perturbations (Thm.~\ref{thm:eps-robust}).
-The local-vs-collective decoding gap (Cor.~\ref{cor:factor-two-gap}) links temporal constraints to a provable reduction in error exponent.
-\item \textbf{Prior work:} we explicitly compare to hazy environments \citep{ZwolakQuanZurek2009}, photon redundancy \citep{RiedelZurek2010,RiedelZurek2011}, generic objectivity \citep{BrandaoPianiHorodecki2015,Knott2018}, and accessible-information approaches \citep{Touil2022}.
-\item \textbf{Concrete physical model:} Sec.~\ref{sec:centralspin} gives a full worked open-system example computing fragment overlaps and Chernoff exponents from Hamiltonian parameters.
-\item \textbf{DLN connection:} condensed to Sec.~\ref{sec:dln-brief}.
-\end{itemize}
+The present work complements several strands in the QD literature: hazy environments \citep{ZwolakQuanZurek2009}, photon redundancy \citep{RiedelZurek2010,RiedelZurek2011}, generic objectivity \citep{BrandaoPianiHorodecki2015,Knott2018}, and accessible-information approaches \citep{Touil2022}.  Where those works parameterize the environment or the system--environment coupling, we parameterize the observer and its decoding architecture.  Section~\ref{sec:centralspin} provides a fully worked open-system example, and Sec.~\ref{sec:dln-brief} develops the connection to the DLN observer-quality framework.
 
 \section{Conclusion}
 
