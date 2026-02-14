@@ -198,7 +198,9 @@ def min_qubits_for_target_best_subset(xi: np.ndarray, target: float, m_max: int)
     """
     xi_sorted = np.sort(xi)[::-1]  # descending
     cumsum = np.cumsum(xi_sorted[:m_max])
-    if cumsum.size == 0 or cumsum[-1] < target:
+    if cumsum.size == 0:
+        return 0
+    if cumsum[-1] < target:
         return m_max
     idx = int(np.searchsorted(cumsum, target, side="left"))
     return int(idx + 1)
