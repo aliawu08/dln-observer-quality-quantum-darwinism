@@ -896,42 +896,52 @@ Then Lemma~\ref{lem:decision-cont} gives
 $\Prob_{\rho}(\widehat{X}\neq X)\le (\delta-\varepsilon)+\varepsilon=\delta$.
 \end{proof}
 
-\section{Local versus collective decoding: a sharp gap for pure records}
+\section{Local versus collective decoding: scope and a useful special case}
 \label{sec:local-vs-global}
 
 Observer temporal limitations often restrict \emph{which measurements are feasible}.
-A key example is the distinction between collective measurements across $m$ fragments (requiring quantum memory for coherence) and product measurements (measuring each fragment immediately).
+A common distinction is between collective measurements across $m$ fragments (which may require preserving quantum coherence across acquisition and decoding) and individual/product strategies (measuring each fragment immediately).
 
-For two pure states $\ket{\psi_0},\ket{\psi_1}$ with overlap $c:=|\braket{\psi_0}{\psi_1}|\in(0,1)$, the $m$-copy conditional states are $\ket{\psi_0}^{\otimes m}$ and $\ket{\psi_1}^{\otimes m}$ with overlap $c^m$.
-The quantum Chernoff coefficient is $c^{2m}$, giving exponent $-\log c^2$ per copy.
+It is important to separate (i) what is true for \emph{optimal} individual (non-entangling) strategies and (ii) what is true under additional local readout restrictions.
 
-By contrast, any measurement on a \emph{single copy} induces classical distributions $p,q$ whose Bhattacharyya coefficient $B(p,q)=\sum_y\sqrt{p(y)q(y)}$ is bounded below by the square-root fidelity \citep{FuchsCaves1994,Jozsa1994}.
-For pure states this yields $B(p,q)\ge c$.
-For product measurements on $m$ copies, the classical Chernoff coefficient is at least $c^m$, yielding exponent at most $-\log c$ per copy.
+\begin{proposition}[No universal exponent gap for two pure hypotheses]
+\label{prop:no-gap-pure}
+Let $\ket{\psi_0}$ and $\ket{\psi_1}$ be two pure states with overlap $c:=|\braket{\psi_0}{\psi_1}|\in(0,1)$.
+For discriminating $m$ copies with equal priors, there exist individual (non-entangling) measurement strategies whose error exponent matches the collective optimum, and adaptive individual strategies can match the exact multi-copy Helstrom error for every $m$ \cite{AcinBaganBaigMasanesMunozTapia2005}.
+\end{proposition}
 
-\begin{corollary}[A factor-of-two exponent gap for pure-state records]
+\begin{remark}[A simple fixed individual measurement achieving the collective Chernoff exponent]
+Projecting each copy onto the basis $\{\ket{\psi_0},\ket{\psi_0^\perp}\}$ and deciding ``1'' if any $\ket{\psi_0^\perp}$ outcome occurs yields Bayes error $P_e=\tfrac12 c^{2m}$.
+This achieves the collective Chernoff exponent $-\log(c^{2})$ (though not the optimal finite-$m$ prefactor).
+\end{remark}
+
+Although there is no \emph{unconditional} exponent separation between product and collective measurements for two pure hypotheses, a constant-factor penalty does arise for certain widely used local readouts.
+One example is repeated application of the \emph{single-copy Helstrom measurement} (the Bayes-optimal measurement for one copy) followed by optimal classical postprocessing.
+
+\begin{corollary}[Factor-of-two penalty for repeated single-copy Helstrom readout on pure records]
+\label{cor:helstrom-penalty}
 \label{cor:factor-two-gap}
-Let $\ket{\psi_0},\ket{\psi_1}$ be pure states with overlap $c\in(0,1)$.
-Let $P^{\mathrm{coll}}_e(m)$ be the optimal Bayes error using \emph{collective} measurements on $m$ copies, and let $P^{\mathrm{prod}}_e(m)$ be the optimal Bayes error over all \emph{product} measurements (local POVMs on each copy, followed by optimal classical postprocessing).
-Then the optimal error exponents satisfy
-\[
-\lim_{m\to\infty}-\frac1m\log P^{\mathrm{coll}}_e(m)= -\log(c^2),
-\qquad
-\limsup_{m\to\infty}-\frac1m\log P^{\mathrm{prod}}_e(m)\le -\log(c).
-\]
-In particular, the best achievable exponent under product measurements is at most half the collective-measurement exponent.
+Let $\ket{\psi_0},\ket{\psi_1}$ be pure with overlap $c\in(0,1)$ and equal priors.
+If the observer measures each copy using the single-copy Helstrom POVM and then performs the optimal classical decision rule on the $m$ outcomes, the achieved Chernoff exponent equals $-\log c$ per copy.
+By contrast, collective decoding achieves exponent $-\log(c^2)$ per copy.
+Thus, under this \emph{fixed local readout restriction}, the collective exponent is exactly twice the Helstrom-repeated exponent.
 \end{corollary}
 
 \begin{proof}
-The collective-measurement exponent is the quantum Chernoff exponent for pure states, which equals $-\log(c^2)$ \citep{Audenaert2007,NussbaumSzkola2009}.
-For product measurements, first measure each copy with some POVM, inducing classical distributions with Bhattacharyya coefficient $B\ge c$ \citep{FuchsCaves1994,Jozsa1994}.
-For i.i.d.\ classical samples, the classical Chernoff coefficient equals $\min_{s\in[0,1]}\sum_y p(y)^s q(y)^{1-s}\ge B$ (since $s=1/2$ is feasible and gives $B$).
-Thus the $m$-sample coefficient is at least $c^m$, giving exponent at most $-\log c$.
+For a single copy, the Helstrom-optimal Bayes error for two pure states with overlap $c$ (equal priors) is
+$P_e^{(1)}=\tfrac12\bigl(1-\sqrt{1-c^2}\bigr)$.
+The Helstrom measurement produces a symmetric binary channel with conditional outcome distributions
+$[1-P_e^{(1)},P_e^{(1)}]$ and $[P_e^{(1)},1-P_e^{(1)}]$.
+For such symmetric binary distributions, the classical Chernoff coefficient is attained at $s=1/2$ and equals
+$2\sqrt{P_e^{(1)}(1-P_e^{(1)})}=c$.
+Thus the achievable product-measurement Chernoff exponent equals $-\log c$ per copy.
+Collective decoding attains the quantum Chernoff exponent $-\log(c^2)$ per copy for pure states.
 \end{proof}
 
 \begin{remark}[Interpretation for observer quality]
-If $\tau_O$ is too small to maintain coherence across many fragments, then the observer is effectively restricted to product measurements, reducing the achievable redundancy by a \emph{quantifiable} amount (Cor.~\ref{cor:factor-two-gap}).
-This provides a mathematically explicit route from temporal observer constraints to reduced objectivity.
+Temporal limits (small $\tau_O$) can motivate immediate per-fragment readout.
+However, for two pure hypotheses, optimal individual strategies can still match collective exponents (Proposition~\ref{prop:no-gap-pure}).
+Therefore, any performance gap must be attributed to additional observer constraints (e.g., fixed calibration/readout choices such as repeated single-copy Helstrom measurements), not to ``locality'' alone.
 \end{remark}
 
 \section{Worked physical model: central-spin pure dephasing}
