@@ -6,7 +6,7 @@ These tests verify mathematical claims that underlie the theoretical framework:
     3. Decision continuity: |Tr(M(rho - sigma))| <= D_tr(rho, sigma) for POVM effects
     4. Numerical regression against seed=2 central-spin values (cross-validation)
 
-Restructured for pytest.
+Adapted from paper4a_package/tests/run_tests.py; restructured for pytest.
 """
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 # Reproducibility
 
-This repository is designed to be fully checkable: figures, bounds, and PDFs can be rebuilt from source.
+This repository is designed to make Paper 4A fully checkable: figures, bounds, and PDFs can be rebuilt from source.
 
 ## Quick start (Python)
 
@@ -31,13 +31,16 @@ The worked example is a central-spin pure-dephasing model.
 - Outputs (generated):
   - `figures/central_spin_redundancy_vs_time.png`
   - `figures/central_spin_m_required_vs_time.png`
+  - `figures/central_spin_robustness_vs_p.png`
 
 The `make figs` target also copies these into the paper folders for LaTeX compilation:
 
 - `paper/preprint/central_spin_redundancy_vs_time.png`
 - `paper/preprint/central_spin_m_required_vs_time.png`
+- `paper/preprint/central_spin_robustness_vs_p.png`
 - `paper/pra/central_spin_redundancy_vs_time.png`
 - `paper/pra/central_spin_m_required_vs_time.png`
+- `paper/pra/central_spin_robustness_vs_p.png`
 
 The CI workflow rebuilds figures and fails if the committed paper figures do not match regenerated outputs.
 
@@ -56,14 +59,14 @@ make pra
 ## Docker (optional)
 
 ```bash
-docker build -t observer-quality .
-docker run --rm observer-quality
+docker build -t paper4a .
+docker run --rm paper4a
 ```
 
 To build PDFs inside the container:
 
 ```bash
-docker run --rm -it observer-quality bash -lc "make figs && make preprint && make pra"
+docker run --rm -it paper4a bash -lc "make figs && make preprint && make pra"
 ```
 
 ## Determinism
