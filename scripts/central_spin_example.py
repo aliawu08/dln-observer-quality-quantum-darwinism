@@ -192,14 +192,16 @@ def per_qubit_xi_depolarized(c: np.ndarray, p_dep: float) -> np.ndarray:
 
 
 def min_qubits_for_target_best_subset(xi: np.ndarray, target: float, m_max: int) -> int:
-    """Choose the best subset (largest xi_k) and return minimal m meeting target."""
+    """Choose the best subset (largest xi_k) and return minimal m meeting target.
+
+    Returns m_max if the target is not achievable within the access budget.
+    """
     xi_sorted = np.sort(xi)[::-1]  # descending
     cumsum = np.cumsum(xi_sorted[:m_max])
-    if cumsum.size == 0:
-        return 0
+    if cumsum.size == 0 or cumsum[-1] < target:
+        return m_max
     idx = int(np.searchsorted(cumsum, target, side="left"))
-    m = idx + 1
-    return int(min(m, m_max))
+    return int(idx + 1)
 
 
 def min_qubits_for_target_random_access(
@@ -216,6 +218,8 @@ def min_qubits_for_target_random_access(
       - The observer samples m fragments uniformly without replacement.
       - We estimate the median accumulated exponent over random samples.
       - Return the minimal m whose median (over Monte Carlo trials) meets target.
+
+    Returns m_max if the target is not achievable within the access budget.
 
     Implementation trick:
       A random subset of size m is the first m elements of a random permutation.
@@ -234,9 +238,10 @@ def min_qubits_for_target_random_access(
         cumsums[i, :] = np.cumsum(perm[:m_max])
 
     med = np.median(cumsums, axis=0)
+    if med.size == 0 or med[-1] < target:
+        return m_max
     idx = int(np.searchsorted(med, target, side="left"))
-    m = idx + 1
-    return int(min(m, m_max))
+    return int(idx + 1)
 
 
 def redundancy_vs_time(
