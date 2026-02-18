@@ -1,0 +1,27 @@
+name: LaTeX Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-pdfs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build preprint PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: paper4a_observer_quality_major_revision_preprint.tex
+          working_directory: paper/preprint
+          latexmk_use_xelatex: false
+          latexmk_shell_escape: false
+
+      - name: Build PRA (RevTeX) PDF
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: paper4a_observer_quality_major_revision_PRA_revtex.tex
+          working_directory: paper/pra
+          latexmk_use_xelatex: false
+          latexmk_shell_escape: false

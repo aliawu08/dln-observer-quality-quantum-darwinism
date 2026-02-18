@@ -1,0 +1,1169 @@
+
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm}
+\usepackage{braket}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+
+% ---------- Macros ----------
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\Dtr}{D_{\mathrm{tr}}}
+\newcommand{\normone}[1]{\left\lVert #1\right\rVert_{1}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\1}{\mathbf{1}}
+
+\newcommand{\QCBcoef}{Q}
+\newcommand{\QCBdist}{\xi}
+
+% ---------- Theorem environments ----------
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+
+\title{\bf Observer Quality as a Resource Variable in Quantum Darwinism:\\
+Optimal Decoding, $\varepsilon$-Approximate Spectrum Broadcast Structure,\\
+and a Central-Spin Worked Example}
+
+\author{
+Alia Wu\\
+Risk Efficacy \& Redline Rising\\
+\texttt{wut08@nyu.edu}\\
+\href{https://orcid.org/0009-0005-4424-102X}{ORCID: 0009-0005-4424-102X}
+}
+
+\date{February 7, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Quantum Darwinism (QD) and Spectrum Broadcast Structure (SBS) formalize a mechanism by which many observers can learn the same classical pointer value of a system by measuring different fragments of its environment.
+Most QD analyses treat the observer as idealized: unlimited access, perfect calibration, and no temporal constraints.
+This paper introduces an explicit \emph{observer quality} parameterization and propagates it through redundancy and objectivity statements in a way that remains stable under an explicit $\varepsilon$-SBS trace-distance error model.
+
+Our main technical contributions are:
+(i) a decoder-level, tight (Chernoff-optimal) sample-complexity characterization for the number of environmental fragments needed to infer a pointer value under a calibrated observer model,
+(ii) a data-processing theorem showing that calibration noise (modeled as a CPTP channel) degrades the quantum Chernoff exponent, and
+(iii) an $\varepsilon$-robustness theorem upgrading ideal-SBS sample-complexity bounds to approximate-SBS states with additive error control.
+
+To address ``no concrete physics'' concerns, we provide a fully worked open-system example: a central-spin pure-dephasing model whose conditional fragment states can be computed analytically, yielding explicit formulas for the observer parameters $(R_O,\Lambda_O,\tau_O)$ (where a scalar calibration index $C_O$ is derived from $\Lambda_O$ for binary tasks) as functions of couplings, readout noise, and acquisition time.
+We also highlight a sharp performance gap between collective (coherent) decoding and commonly used fixed per-fragment readouts (e.g., repeated single-copy Helstrom measurements) for pure-state records, directly linking \emph{quantum memory horizon} to redundancy.
+Finally, we show that the conditional-independence structure of SBS states is a bipartite factor DAG whose latent node is the pointer variable, instantiating the belief-dependency graph of the Dot--Linear--Network (DLN) compression framework without modification.  This identification yields a three-stage decoder classification $q_O\in\{q_{\mathrm{D}},q_{\mathrm{L}},q_{\mathrm{N}}\}$ with a tight, achievable factor-of-two exponent gap between product and collective decoding for pure-state records, and a revision-graph formalism governing adaptive transitions between measurement strategies under changing coherence conditions.
+We also demonstrate \emph{inverted sophistication}: an unmonitored collective decoder can be strictly outperformed by product decoding when coherence reliability falls below a critical threshold, and show that this inversion requires observer-side rather than system-side decoherence.
+\end{abstract}
+
+\section{Introduction}
+
+Quantum Darwinism proposes that classical objectivity arises when information about a preferred pointer observable of a system is redundantly encoded in the environment \citep{OPZ2004,Zurek2009,BlumeKohoutZurek2006}.
+A complementary structural characterization is Spectrum Broadcast Structure \citep{HorodeckiKorbiczHorodecki2015,KorbiczReview2021}, and strong-QD variants connect entropic and geometric criteria \citep{LeOlayaCastro2019,KorbiczReview2021}.
+
+A persistent modeling gap is that \emph{observers are usually treated as ideal}.
+Yet in realistic experiments or cognitive settings, an observer may:
+(i) access only a fraction of environment fragments,
+(ii) have imperfect measurement calibration, and
+(iii) be limited by a temporal integration horizon (finite memory or pointer stability).
+There is substantial prior work on non-idealities in the \emph{environment} (e.g., ``hazy'' environments \citep{ZwolakQuanZurek2009}) and on generic emergence of objectivity \citep{BrandaoPianiHorodecki2015,Knott2018}, but the observer itself is rarely parameterized at the same level of explicitness.
+
+\paragraph{Scope of this paper.}
+We restrict to a single core task: \emph{observer-relative redundancy/objectivity statements} in QD/SBS when the observer is explicitly modeled by a quality triple
+\[
+Q_O=(R_O, \Lambda_O, \tau_O),
+\]
+where $R_O$ is an access fraction, $\Lambda_O$ is a calibration channel applied to each accessed fragment prior to readout, and $\tau_O$ is an acquisition or memory horizon.
+For interpretability (and to align with existing QD language) we also extract a scalar \emph{calibration index} $C_O$ from $\Lambda_O$ in the binary case.
+
+\paragraph{Why an $\varepsilon$-SBS error model.}
+Many QD/SBS derivations assume conditional i.i.d.\ record models.
+Instead, we start from an explicit trace-distance approximation:
+the actual joint state $\rho_{S\cE}$ is within $\varepsilon$ in trace distance of an \emph{ideal} SBS state $\sigma_{S\cE}$.
+We then push sample-complexity statements through this approximation using data processing and decision-theoretic continuity bounds.
+
+\section{Related work and positioning}
+
+This paper builds on three strands:
+
+\begin{enumerate}[leftmargin=2em]
+\item \textbf{QD and SBS foundations.}
+The environment-as-witness framing originates in \citet{OPZ2004} and is synthesized by \citet{Zurek2009,BlumeKohoutZurek2006}.
+SBS provides a structural notion of objectivity \citep{HorodeckiKorbiczHorodecki2015}, and a unifying review is \citet{KorbiczReview2021}.
+Strong-QD links entropic and structural conditions \citep{LeOlayaCastro2019}.
+\item \textbf{Non-ideal environments and fragment size.}
+``Hazy'' environments reduce redundancy and record capacity \citep{ZwolakQuanZurek2009}.
+Photon-scattering models exhibit huge redundancy in everyday environments \citep{RiedelZurek2010,RiedelZurek2011}.
+\item \textbf{Hypothesis testing and optimal decoding.}
+Binary quantum hypothesis testing is classical material \citep{Helstrom1976,Watrous2018}.
+The quantum Chernoff bound characterizes the optimal asymptotic error exponent \citep{Audenaert2007,NussbaumSzkola2009}.
+These tools are natural for QD because ``learning the pointer value'' is precisely a discrimination task between conditional fragment states.
+\end{enumerate}
+
+We also connect to recent resource-theoretic and operational approaches emphasizing \emph{accessible information} rather than mutual information \citep{Touil2022}.
+
+\section{Setup: SBS, $\varepsilon$-SBS, and observer quality}
+
+\subsection{Spectrum Broadcast Structure and its approximation}
+
+Let $S$ be the system and $\cE=\cE_1\otimes\cdots\otimes\cE_N$ a decomposition of the environment into fragments.
+We focus on a classical pointer random variable $X$ taking values in a finite alphabet $\cX$ (often $\cX=\{0,1\}$).
+
+\begin{definition}[SBS state]
+A joint state $\sigma_{S\cE}$ has \emph{spectrum broadcast structure} (SBS) with respect to pointer basis $\{\ket{x}\}_{x\in\cX}$ if it can be written as
+\begin{equation}
+\sigma_{S\cE}=\sum_{x\in\cX} p_x \ket{x}\!\bra{x}_S \otimes \bigotimes_{k=1}^N \sigma^{(x)}_{\cE_k},
+\label{eq:sbs}
+\end{equation}
+where $p$ is a probability distribution and, for each fragment $k$, the conditional states $\{\sigma^{(x)}_{\cE_k}\}_{x\in\cX}$ have mutually orthogonal supports (perfect distinguishability) \citep{HorodeckiKorbiczHorodecki2015,KorbiczReview2021}.
+\end{definition}
+
+\begin{definition}[$\varepsilon$-SBS]
+A state $\rho_{S\cE}$ is \emph{$\varepsilon$-SBS} if there exists an SBS state $\sigma_{S\cE}$ such that
+\[
+\Dtr(\rho_{S\cE},\sigma_{S\cE})\le \varepsilon,
+\qquad
+\Dtr(\rho,\sigma):=\tfrac12\normone{\rho-\sigma}.
+\]
+\end{definition}
+
+\subsection{Observer quality}
+
+An observer interacts only with a subset of fragments and through an imperfect instrument.
+
+\begin{definition}[Observer quality]
+An observer is specified by a quality triple
+\[
+Q_O=(R_O,\Lambda_O,\tau_O),
+\]
+where:
+\begin{enumerate}[leftmargin=2em]
+\item $R_O\in[0,1]$ is an \emph{access fraction}: out of $N$ fragments, $O$ can access at most $m_{\max}=\lfloor R_O N\rfloor$ fragments in a given observational episode;
+\item $\Lambda_O$ is a CPTP map acting on each accessed fragment, representing calibration noise, coarse-graining, or any pre-measurement processing;
+\item $\tau_O$ is a temporal horizon (memory, stability, or acquisition time). In the central-spin model (Sec.~\ref{sec:centralspin}), it is mapped to an acquisition time budget and a pointer-stability constraint.
+\end{enumerate}
+\end{definition}
+
+When $\cX=\{0,1\}$, we can compress $\Lambda_O$ to a scalar ``single-fragment calibration'' index.
+
+\begin{definition}[Binary calibration index]
+Let $\rho_0,\rho_1$ be the two conditional states of a single accessed fragment after $\Lambda_O$, and assume equal priors.
+Define
+\begin{equation}
+C_O:=1-P_e^\star(\rho_0,\rho_1),
+\qquad
+P_e^\star(\rho_0,\rho_1)=\tfrac12\left(1-\tfrac12\normone{\rho_0-\rho_1}\right),
+\label{eq:calibration}
+\end{equation}
+where $P_e^\star$ is the Helstrom-optimal single-copy Bayes error \citep{Helstrom1976,Watrous2018}.
+Then $C_O\in[\tfrac12,1]$.
+\end{definition}
+
+
+\subsection{Observer inference topology: DLN instantiation in quantum Darwinism}
+\label{sec:qstates}
+
+The resource triple $Q_O=(R_O,\Lambda_O,\tau_O)$ parameterizes observer
+\emph{limitations}---how many fragments can be accessed, how each is
+distorted, and how long coherence can be maintained.
+It does not parameterize the observer's \emph{inference structure}: the
+topology by which evidence from multiple fragments is organized, combined,
+and---when necessary---reorganized.
+
+The Dot--Linear--Network (DLN) framework
+\citep{WuDLNCompression2026preprint} provides a graph-theoretic
+formalization of exactly this missing variable.
+DLN characterizes cognitive or information-processing stages by two
+objects:
+a \emph{belief-dependency graph}~$G$ governing within-episode inference,
+and a \emph{revision graph}~$\mathcal{R}$ over a model
+space~$\mathcal{M}$ governing when and how the active inference
+structure can be changed.
+We now show that both objects instantiate directly in the QD/SBS setting:
+$G$ as the conditional-independence structure of the SBS state, and
+$\mathcal{R}$ as the set of physically realizable transitions between
+measurement strategies.
+
+
+\subsubsection{SBS states as bipartite factor DAGs (Level~1: belief graph $G$)}
+
+\begin{proposition}[SBS conditional independence as a bipartite DAG]
+\label{prop:sbs-dag}
+Let $\sigma_{S\cE}$ be an SBS state (Definition~1) with pointer variable
+$X$ taking values in~$\cX$.  The tensor-product form
+\begin{equation}
+  \sigma_{S\cE}
+  = \sum_{x\in\cX} p_x \ket{x}\!\bra{x}_S
+    \otimes \bigotimes_{k=1}^{N} \sigma^{(x)}_{\cE_k}
+  \label{eq:sbs-factor}
+\end{equation}
+defines a bipartite directed acyclic graph (DAG): a single latent node
+$X$ with directed edges $X \to \cE_k$ for $k=1,\dots,N$, and no edges
+among fragment nodes.
+Conditional on $X=x$, the fragment states
+$\{\sigma^{(x)}_{\cE_k}\}_{k=1}^{N}$ are mutually independent:
+\[
+  \cE_j \;\perp\!\!\!\perp\; \cE_k \mid X
+  \qquad \text{for all } j\neq k.
+\]
+\end{proposition}
+
+\begin{proof}
+The product structure
+$\bigotimes_{k=1}^{N}\sigma^{(x)}_{\cE_k}$ conditional on $X=x$ is the
+defining property of conditional independence in a tensor-product state.
+In the classical reduction (diagonal in the pointer basis, with each
+fragment traced to measurement outcomes $y_k$), the joint distribution
+factorizes as
+$p(x,y_1,\dots,y_N)=p(x)\prod_k p(y_k\mid x)$,
+which satisfies the Markov property of the stated DAG:
+the pointer node $X$ d-separates all fragment nodes
+\citep{Pearl1988}.
+\end{proof}
+
+\begin{remark}[SBS as a DLN factor graph]
+\label{rem:sbs-factor}
+The DAG of Proposition~\ref{prop:sbs-dag} is precisely the
+\emph{belief-dependency graph}~$G$ of a Network-stage agent in the DLN
+framework \citep[Sec.~2.1]{WuDLNCompression2026preprint}: a bipartite
+graph with $F$ shared latent factors connected to $K$ evidence nodes.
+In the QD setting, $F=|\cX|$ (pointer alphabet size, typically
+$|\cX|=2$) and $K=N$ (number of environment fragments).
+Since QD objectivity requires high redundancy, i.e.\ $N\gg 1$, the
+condition $F \ll K$ that drives the DLN compression thesis is
+automatically and generically satisfied in any QD scenario.
+\end{remark}
+
+
+\subsubsection{Decoder classes as DLN stages}
+
+We define three nested classes of decoders on the $m$-fragment register,
+directly instantiating the DLN stage classification of
+\citep[Sec.~2.1]{WuDLNCompression2026preprint} in the QD measurement
+setting.
+
+\begin{definition}[Decoder classes (DLN stages in QD)]
+\label{def:q-states}
+Let $A\subseteq\{1,\dots,N\}$ with $|A|=m$, and let
+$\rho_A^{(x)} := \bigotimes_{k\in A}\Lambda_O(\sigma^{(x)}_{\cE_k})$
+denote the calibrated conditional states (SBS witness experiment,
+$\cX=\{0,1\}$).
+A \emph{decoder} is a measurement--decision procedure producing an
+estimate $\widehat{X}\in\cX$ from the $m$-fragment register.
+We define three decoder classes, each corresponding to a DLN stage
+\citep[Sec.~2.1]{WuDLNCompression2026preprint}:
+%
+\begin{enumerate}[leftmargin=2.2em,label=(\roman*)]
+\item \textbf{$q_{\mathrm{D}}$ (Dot): memoryless decoding.}
+The decoder acts on at most one fragment $\cE_k$ at a time and retains
+no state across fragments.
+The belief-dependency graph is empty ($G=\emptyset$): no evidence
+propagates between fragment nodes.
+
+\item \textbf{$q_{\mathrm{L}}$ (Linear): product decoding with
+classical postprocessing.}
+The decoder applies a product POVM $M=\bigotimes_{k\in A}M_k$, followed
+by an arbitrary classical decision rule on the $m$~outcomes.
+The belief-dependency graph is a null graph on $m$ evidence nodes: each
+fragment is processed independently, and learning from fragment~$j$ does
+not update inference about fragment~$k$.
+
+\item \textbf{$q_{\mathrm{N}}$ (Network): collective decoding.}
+The decoder may apply an arbitrary joint POVM on the full register
+$\bigotimes_{k\in A}\cE_k$.
+The belief-dependency graph is the bipartite DAG of
+Proposition~\ref{prop:sbs-dag}: the observer's inference explicitly
+represents the pointer~$X$ as a shared latent parent of all fragment
+nodes, and evidence from any single fragment propagates through~$X$ to
+update predictions for all others.
+\end{enumerate}
+\end{definition}
+
+
+\begin{proposition}[Strict nesting of decoder classes]
+\label{prop:nesting}
+Let $\mathsf{Dec}_D$, $\mathsf{Dec}_L$, $\mathsf{Dec}_N$ denote the
+sets of all decoders in classes $q_{\mathrm{D}}$, $q_{\mathrm{L}}$,
+$q_{\mathrm{N}}$, respectively.  Then
+\[
+  \mathsf{Dec}_D \;\subsetneq\; \mathsf{Dec}_L
+                  \;\subsetneq\; \mathsf{Dec}_N.
+\]
+Both inclusions are strict whenever $m\ge 2$ and the conditional
+fragment states $\{\sigma^{(x)}_{\cE_k}\}$ are not identical
+across~$x$.
+\end{proposition}
+
+\begin{proof}
+A single-fragment measurement on $\cE_k$ is the product POVM with
+$M_j=\mathbf{1}$ for $j\neq k$, establishing
+$\mathsf{Dec}_D\subseteq\mathsf{Dec}_L$.
+Any product POVM is a special case of a joint POVM, giving
+$\mathsf{Dec}_L\subseteq\mathsf{Dec}_N$.
+For strictness of the first inclusion: any POVM acting on two or more
+fragments is in $\mathsf{Dec}_L\setminus\mathsf{Dec}_D$.
+For strictness of the second: the Helstrom-optimal measurement on
+$\rho_A^{(0)}$ versus $\rho_A^{(1)}$ is generically entangled across
+fragments when the per-fragment overlaps $c_k$ are not~$0$ or~$1$
+\citep{Helstrom1976}, placing it in
+$\mathsf{Dec}_N\setminus\mathsf{Dec}_L$.
+\end{proof}
+
+
+\subsubsection{Quantitative content: stage-dependent error exponents and redundancy}
+
+The strict nesting of decoder classes has quantitative consequences for
+the central QD observable: the number of fragments required to achieve a
+given decoding error.
+
+\begin{proposition}[Tight exponent separation across DLN stages, pure-state records]
+\label{prop:tight-gap}
+Let $\ket{\psi_0},\ket{\psi_1}$ be pure states with overlap
+$c:=|\braket{\psi_0}{\psi_1}|\in(0,1)$.
+Consider the task of discriminating $\ket{\psi_0}^{\otimes m}$ from
+$\ket{\psi_1}^{\otimes m}$ under equal priors.
+The optimal error exponents achievable by each decoder class are:
+%
+\begin{align}
+  \xi_{\mathrm{N}}
+    &:= \lim_{m\to\infty}
+        -\tfrac{1}{m}\log P_e^{\mathrm{coll}}(m)
+    = -\log(c^2),
+  \label{eq:xi-N}\\[4pt]
+  \xi_{\mathrm{L}}
+    &:= \lim_{m\to\infty}
+        -\tfrac{1}{m}\log P_e^{\mathrm{prod}}(m)
+    = -\log(c),
+  \label{eq:xi-L}\\[4pt]
+  \xi_{\mathrm{D}}
+    &:= 0\qquad
+    \bigl(\text{$P_e^{\mathrm{single}}
+    = \tfrac{1}{2}(1-\sqrt{1-c^2})$,
+    independent of $m$}\bigr).
+  \label{eq:xi-D}
+\end{align}
+%
+In particular:
+\begin{enumerate}[leftmargin=2em,label=(\alph*)]
+\item The exponent ratio between Network and Linear stages is
+      exactly~$2$:
+      $\xi_{\mathrm{N}}/\xi_{\mathrm{L}} = 2$.
+\item Both exponents are \emph{achievable}:
+      $\xi_{\mathrm{N}}$ by the Helstrom measurement on the joint
+      $m$-copy register \citep{Audenaert2007,NussbaumSzkola2009},
+      and $\xi_{\mathrm{L}}$ by the optimal single-copy POVM
+      (which induces classical distributions with Bhattacharyya
+      coefficient $B=c$ for pure states \citep{FuchsCaves1994})
+      followed by the Neyman--Pearson likelihood-ratio test on the
+      i.i.d.\ classical outcomes.
+\item The Dot stage has zero exponent: a memoryless decoder's error
+      is bounded below by the single-copy Helstrom error regardless
+      of $m$, because no evidence is accumulated.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Equation~\eqref{eq:xi-N} is the quantum Chernoff exponent for pure
+states \citep{Audenaert2007,NussbaumSzkola2009}.
+For \eqref{eq:xi-L}: any single-copy POVM on pure states
+$\ket{\psi_0},\ket{\psi_1}$ induces classical distributions $p,q$ with
+Bhattacharyya coefficient
+$B(p,q)=\sum_y\sqrt{p(y)q(y)}\ge c$
+\citep{FuchsCaves1994,Jozsa1994}.
+For the classical Chernoff coefficient,
+$\min_{s\in[0,1]}\sum_y p(y)^s q(y)^{1-s} \ge B$ (since $s=\tfrac12$
+is feasible and yields~$B$), so the $m$-copy product-measurement
+coefficient is at least $c^m$, giving exponent at most $-\log c$.
+Achievability: the Helstrom single-copy POVM on pure states with
+overlap~$c$ induces classical distributions with $B = c$ exactly
+(direct calculation of the binary Bhattacharyya coefficient for the
+Helstrom outcome probabilities
+$p_\pm = \tfrac{1}{2}(1\pm\sqrt{1-c^2})$), so the classical Chernoff
+exponent of the induced i.i.d.\ channel is precisely $-\log c$.
+Equation~\eqref{eq:xi-D}: a Dot decoder accesses one fragment per
+episode with no memory, so its error equals the single-copy Helstrom
+error irrespective of the total number of available fragments.
+\end{proof}
+
+
+\begin{remark}[Mixed-state fragment records]
+\label{rem:mixed-state-gap}
+Proposition~\ref{prop:tight-gap} is stated for pure-state records,
+which arise naturally in the central-spin worked example
+(Sec.~\ref{sec:centralspin}) and in any pure-dephasing model.
+For mixed-state conditional fragment states, the exponent ratio
+$\xi_{\mathrm{N}}/\xi_{\mathrm{L}}$ lies in $[1,2]$:
+the lower bound~$1$ is saturated when the conditional states commute
+(classical records, where collective measurements offer no advantage
+over product measurements),
+and the upper bound~$2$ is saturated in the pure-state limit.
+We conjecture that the ratio is a monotone function of the
+non-commutativity of the conditional fragment states, interpolating
+continuously between the classical limit
+($\xi_{\mathrm{N}}/\xi_{\mathrm{L}}=1$ for commuting states) and the
+fully quantum limit ($\xi_{\mathrm{N}}/\xi_{\mathrm{L}}=2$ for pure
+states).
+A natural candidate for the non-commutativity measure is the
+Hilbert--Schmidt distance to the nearest simultaneously diagonalizable
+pair,
+$d_{\mathrm{HS}}\bigl(\{\sigma^{(0)},\sigma^{(1)}\},\,
+\mathcal{C}_{\mathrm{comm}}\bigr)$,
+but verifying monotonicity of the exponent ratio with respect to this
+(or any other) measure requires controlling the $s$-optimization in the
+quantum Chernoff coefficient for non-commuting mixed states.
+A complete characterization of the mixed-state exponent gap in terms of
+the fragment state geometry---for instance, as a function of sandwiched
+R\'{e}nyi divergences \citep{MosonyiOgawa2015}---remains an open
+problem.
+\end{remark}
+
+
+\begin{corollary}[Stage-dependent redundancy requirement]
+\label{cor:redundancy-stages}
+Fix a target error $\delta\in(0,\tfrac12)$ and suppose all $N$ fragments
+carry identical pure-state records with overlap~$c$.
+Let $m_q(\delta)$ denote the minimum number of fragments sufficient for
+a stage-$q$ observer to achieve error $\le\delta$.
+To leading order in $\log(1/\delta)$:
+\[
+  m_{\mathrm{D}}=\infty\;\text{(if $P_e^{\mathrm{single}}>\delta$)},
+  \qquad
+  m_{\mathrm{L}}(\delta) \sim \frac{\log(1/(2\delta))}{-\log c},
+  \qquad
+  m_{\mathrm{N}}(\delta) \sim \frac{\log(1/(2\delta))}{-\log(c^2)}
+  = \frac{m_{\mathrm{L}}(\delta)}{2}.
+\]
+A Network-stage observer requires half as many fragments as a
+Linear-stage observer for the same error target.
+\end{corollary}
+
+\begin{proof}
+Immediate from Proposition~\ref{prop:tight-gap} and the inversion
+$m_q(\delta) \sim \log(1/(2\delta)) / \xi_q$.
+\end{proof}
+
+
+\begin{remark}[Redundancy ratio as a DLN compression constant]
+\label{rem:compression}
+In the language of \citep{WuDLNCompression2026preprint}, the ratio
+$m_{\mathrm{L}}/m_{\mathrm{N}}=2$ is the \emph{compression efficiency
+gain}: the reduction in evidence units required when the observer
+exploits shared latent structure (the pointer variable) versus treating
+evidence units independently.
+This is the QD specialization of the $O(F)$-versus-$O(K)$ cost-scaling
+thesis of \citep[Proposition~1(i)]{WuDLNCompression2026preprint}.
+The ratio is an exact constant (not merely an asymptotic scaling
+relation) because the pointer alphabet size $|\cX|$ is fixed while the
+number of fragments~$N$ grows, placing QD in the regime $F\ll K$ where
+the DLN compression advantage is maximal.
+\end{remark}
+
+
+\subsubsection{Model space and revision graph
+              (Level~2: measurement-strategy transitions)}
+\label{sec:revision-qd}
+
+The DLN framework formalizes not only the within-episode belief structure
+(the graph~$G$) but also the observer's capacity to \emph{revise} that
+structure.
+Following \citep[Sec.~2.3]{WuDLNCompression2026preprint}, this is
+captured by a model space~$\mathcal{M}$ (the set of candidate belief
+structures) and a revision graph $\mathcal{R}=(\mathcal{M},\mathcal{T})$
+(a directed graph whose edges are the available transitions between
+structures).
+We now specialize these objects to the QD setting.
+
+\begin{definition}[Measurement model space]
+\label{def:model-space-qd}
+For an observer $O$ with resource triple
+$Q_O=(R_O,\Lambda_O,\tau_O)$, define the
+\emph{measurement model space}
+\[
+  \mathcal{M}_O \;\subseteq\;
+  \{\mathsf{Dec}_D,\;\mathsf{Dec}_L,\;\mathsf{Dec}_N\}
+\]
+as the set of decoder classes that are physically realizable
+given~$Q_O$.
+A decoder class $\mathsf{Dec}_q$ is in~$\mathcal{M}_O$ if and only if
+the observer possesses the physical resources to implement at least one
+decoder in that class:
+\begin{itemize}
+\item $\mathsf{Dec}_D\in\mathcal{M}_O$ always
+  (memoryless decoding requires no inter-fragment coherence).
+\item $\mathsf{Dec}_L\in\mathcal{M}_O$ whenever $\tau_O$ is sufficient
+  to sequentially acquire $m$ fragment outcomes and store classical
+  records.
+\item $\mathsf{Dec}_N\in\mathcal{M}_O$ whenever $\tau_O$ is sufficient
+  to maintain quantum coherence across the $m$-fragment register for
+  the full acquisition-plus-decoding interval.
+\end{itemize}
+\end{definition}
+
+
+\begin{definition}[Revision graph in QD]
+\label{def:revision-qd}
+The \emph{revision graph}
+$\mathcal{R}_O = (\mathcal{M}_O,\,\mathcal{T}_O)$
+is a directed graph over the observer's model space, where
+$\mathcal{T}_O \subseteq \mathcal{M}_O\times\mathcal{M}_O$ is the set
+of transitions the observer can execute.
+Following the DLN classification
+\citep[Sec.~2.3]{WuDLNCompression2026preprint}:
+%
+\begin{itemize}
+\item \textbf{Dot.}
+  $\mathcal{M}_O=\{\mathsf{Dec}_D\}$;
+  $\mathcal{R}_O$ is a single vertex with no edges.
+  No revision capacity.
+
+\item \textbf{Linear.}
+  $\mathcal{M}_O=\{\mathsf{Dec}_L\}$;
+  $\mathcal{R}_O$ is a single vertex.
+  The observer occupies a fixed point in model space.
+
+\item \textbf{Network (expand-only).}
+  $\mathcal{M}_O=\{\mathsf{Dec}_N,\mathsf{Dec}_L\}$ with a single
+  directed transition
+  $\mathsf{Dec}_N\to\mathsf{Dec}_L$
+  (degradation when coherence drops below the collective-decoding
+  threshold).
+  No return transition.
+
+\item \textbf{Network (full cycle).}
+  Both transitions
+  $\mathsf{Dec}_N \rightleftharpoons \mathsf{Dec}_L$
+  are available.
+  $\mathcal{R}_O$ contains a directed cycle: the observer can degrade to
+  product measurements when coherence is lost and recover collective
+  measurements when coherence is restored.
+\end{itemize}
+\end{definition}
+
+
+\begin{remark}[Physical mechanisms governing $\mathcal{R}$-transitions]
+\label{rem:transition-physics}
+Transitions in $\mathcal{R}_O$ are governed by the relation between the
+observer's temporal horizon $\tau_O$ and the coherence time required for
+collective decoding.
+In laboratory settings, the relevant physical mechanisms include:
+(i)~fluctuating dephasing rates (e.g., temperature-dependent $T_2$ in
+spin-bath experiments \citep{Schlosshauer2007}),
+(ii)~time-varying calibration noise (drift in detector efficiency or
+alignment),
+(iii)~changes in pointer stability (system relaxation modifying the SBS
+quality parameter~$\varepsilon$).
+An observer that monitors its own decoding performance---a Level~2
+operation in the sense of
+\citep[Sec.~2.3]{WuDLNCompression2026preprint}---and switches decoder
+class in response, is executing a transition in~$\mathcal{R}_O$.
+\end{remark}
+
+
+\begin{proposition}[Bounded recovery under measurement-strategy revision]
+\label{prop:recovery-qd}
+Let an observer~$O$ initially operate in $\mathsf{Dec}_N$ (collective
+decoding, exponent $\xi_{\mathrm{N}}=-\log(c^2)$) and suppose
+coherence conditions degrade at time~$t_0$, forcing a transition to
+$\mathsf{Dec}_L$ (product decoding, exponent $\xi_{\mathrm{L}}=-\log c$).
+Suppose coherence conditions subsequently recover at time $t_1>t_0$.
+\begin{enumerate}[label=(\roman*)]
+\item If $\mathcal{R}_O$ contains the return transition
+  $\mathsf{Dec}_L\to\mathsf{Dec}_N$ (full-cycle Network observer), the
+  observer can recover the exponent $\xi_{\mathrm{N}}$ within a bounded
+  verification interval after~$t_1$.
+  The recovery time is determined by the monitoring protocol (Level~2
+  overhead), analogous to the contraction bound in
+  \citep[Proposition~1(iii)]{WuDLNCompression2026preprint}.
+\item If $\mathcal{R}_O$ lacks the return transition (expand-only Network
+  observer), the observer remains at exponent $\xi_{\mathrm{L}}$
+  permanently, even after coherence is restored.
+\end{enumerate}
+The performance cost of being locked in $\mathsf{Dec}_L$ is a factor of~$2$
+in the required fragment count (Corollary~\ref{cor:redundancy-stages}):
+\[
+  m_{\mathrm{L}}(\delta) = 2\,m_{\mathrm{N}}(\delta)
+  \qquad\text{(pure-state records).}
+\]
+\end{proposition}
+
+\begin{proof}
+Part~(i): after coherence recovery, the conditions for
+$\mathsf{Dec}_N\in\mathcal{M}_O$ are again satisfied.
+A full-cycle observer with a Level~2 monitoring protocol
+(cf.\ the shadow-model verification of
+\citep[Sec.~5.1]{WuDLNCompression2026preprint}) detects that collective
+decoding is again feasible and executes
+$\mathsf{Dec}_L\to\mathsf{Dec}_N$.
+The verification interval is bounded by the monitoring window length plus
+a confirmation period, as established for the analogous contraction
+mechanism in
+\citep[Proposition~1(iii)]{WuDLNCompression2026preprint}.
+Part~(ii): without the return transition, the observer has no mechanism
+to re-enter $\mathsf{Dec}_N$, regardless of restored physical capacity.
+The fragment-count penalty follows from
+Corollary~\ref{cor:redundancy-stages}.
+\end{proof}
+
+
+\paragraph{Concrete monitoring protocol: coherence-gated decoder switching.}
+\label{par:monitoring-protocol}
+We now specify a physically realizable Level~2 protocol for executing
+$\mathcal{R}$-transitions.
+The observer partitions its accessible fragments into a \emph{decoding
+set} $A_{\mathrm{dec}}$ and a \emph{monitoring set}
+$A_{\mathrm{mon}}$, with $|A_{\mathrm{mon}}|=\lceil f\cdot m\rceil$
+for a fixed monitoring fraction $f\in(0,1)$ (typically $f\approx 0.1$--$0.2$).
+The monitoring set is reserved for Level~2 diagnostics and does not
+contribute to the primary pointer estimate.
+
+\begin{enumerate}[leftmargin=2em,label=\textbf{L2.\arabic*}]
+\item \textbf{Cross-validation scoring (continuous).}
+  In each observation episode:
+  (a)~apply the current decoder (collective or product) to
+  $A_{\mathrm{dec}}$, obtaining a pointer estimate $\widehat{x}$;
+  (b)~apply independent single-fragment measurements to each
+  $\cE_k\in A_{\mathrm{mon}}$, obtaining per-fragment estimates
+  $\{\widehat{x}_k\}$;
+  (c)~compute the \emph{consistency score}
+  $s_t := |A_{\mathrm{mon}}|^{-1}\sum_{k\in A_{\mathrm{mon}}}
+  \mathbf{1}[\widehat{x}_k = \widehat{x}]$.
+  Maintain a rolling mean $\bar{s}_W$ over a window of the last $W$
+  episodes.
+
+\item \textbf{Expansion trigger
+  ($\mathsf{Dec}_N\to\mathsf{Dec}_L$).}
+  If $\bar{s}_W$ falls below the \emph{product-decoder baseline}
+  $s_{\mathrm{prod}} := 1-P_e^{\mathrm{single}}$ (the consistency
+  expected when $\widehat{x}$ is no more reliable than majority vote
+  over monitoring fragments), the collective decoder is no longer adding
+  value beyond what product decoding achieves.
+  The observer executes
+  $\mathsf{Dec}_N\to\mathsf{Dec}_L$.
+
+  \emph{Physical trigger:} equivalently, the observer may directly
+  monitor its coherence time via a Ramsey-contrast or spin-echo sequence
+  on an ancilla qubit coupled to the fragment register.
+  If the estimated $\widehat{T}_2$ drops below the collective-decoding
+  threshold $\tau_{\mathrm{coll}}:= m\,t_{\mathrm{meas}}+t_{\mathrm{decode}}$,
+  the transition is triggered.
+
+\item \textbf{Contraction trigger
+  ($\mathsf{Dec}_L\to\mathsf{Dec}_N$).}
+  While operating in $\mathsf{Dec}_L$, the observer periodically runs a
+  \emph{shadow collective test} on a small subset
+  $A_{\mathrm{shadow}}\subseteq A_{\mathrm{mon}}$
+  (with $|A_{\mathrm{shadow}}|\ll m$, requiring coherence only over the
+  shadow subset):
+  %
+  (a)~apply a collective POVM to $A_{\mathrm{shadow}}$, obtaining
+  $\widehat{x}_{\mathrm{shadow}}$;
+  (b)~compare the shadow estimate's consistency with the product
+  decoder's estimate over an evaluation window of length~$w$.
+  %
+  If the shadow collective measurement shows statistically significant
+  improvement---specifically, if
+  $\mathrm{MSE}_{\mathrm{shadow}} <
+  (1-\theta)\,\mathrm{MSE}_{\mathrm{prod}}$
+  for a contraction margin $\theta\in(0,1)$---the observer executes
+  $\mathsf{Dec}_L\to\mathsf{Dec}_N$.
+
+  \emph{Physical trigger:} equivalently, if the re-estimated
+  $\widehat{T}_2$ exceeds $\tau_{\mathrm{coll}}$ for $w$ consecutive
+  episodes, the return transition is warranted.
+\end{enumerate}
+
+\noindent
+The monitoring fraction $f$ imposes an overhead: the effective decoding
+set is reduced to $(1-f)\,m$ fragments, increasing the required total
+fragment count by a factor of $1/(1-f)$ (e.g., ${\sim}12\%$ overhead
+for $f=0.1$).
+This overhead is the Level~2 cost
+$c_{\mathrm{meta}}$ in the language of
+\citep[Proposition~1]{WuDLNCompression2026preprint}.
+The recovery time after coherence restoration is bounded by
+$n_{\mathrm{holdout}}+w$ episodes, where $n_{\mathrm{holdout}}$ is the
+minimum interval between contraction tests.
+
+
+\begin{table}[t]
+\caption{%
+DLN instantiation in quantum Darwinism.
+The belief-dependency graph~$G$ (Level~1) and revision
+graph~$\mathcal{R}$ (Level~2) are the formal objects of
+\citet{WuDLNCompression2026preprint};
+the decoder class and error exponent are derived in this paper.
+}
+\label{tab:q-dln-mapping}
+\centering
+\small
+\begin{tabular}{
+  p{0.06\linewidth}
+  p{0.10\linewidth}
+  p{0.22\linewidth}
+  p{0.22\linewidth}
+  p{0.20\linewidth}
+  p{0.10\linewidth}
+}
+\toprule
+$q_O$ & DLN stage & Belief graph $G$
+      & Revision graph $\mathcal{R}$
+      & QD decoder class
+      & Exponent \\
+\midrule
+$q_{\mathrm{D}}$ & Dot
+  & $G=\emptyset$
+  & $|\mathcal{M}|{=}1$; no edges
+  & Single-fragment; memoryless
+  & $0$ \\[3pt]
+$q_{\mathrm{L}}$ & Linear
+  & Null graph on $m$ nodes
+  & Fixed point
+  & Product POVM $\bigotimes_k M_k$ + classical post.
+  & $-\log c$ \\[3pt]
+$q_{\mathrm{N}}$ & Network
+  & Bipartite DAG: $X\to\cE_k$
+  & Cycle: $\mathsf{Dec}_N \rightleftharpoons \mathsf{Dec}_L$
+  & Collective POVM on $\bigotimes_{k\in A}\cE_k$
+  & $-\log(c^2)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{remark}[Finite-resource sample complexity]
+\label{rem:finite-resource}
+The fragment-count thresholds in
+Corollary~\ref{cor:redundancy-stages} are leading-order
+(large-$\log(1/\delta)$) statements.
+For finite~$m$, the non-asymptotic bounds of
+Secs.~\ref{sec:chernoff}--\ref{sec:eps-robust} (Chernoff upper bound,
+calibration contraction, $\varepsilon$-robustness) apply at each DLN
+stage.
+This places the stage distinction in the finite-resource regime of
+non-asymptotic quantum information theory
+\citep{Tomamichel2016,AudenaertMosonyiVerstraete2012,
+ChengDattaLiuNuradhaSalzmannWilde2025}.
+\end{remark}
+
+\section{Optimal decoding and Chernoff sample complexity}
+
+\subsection{Binary hypothesis testing on fragments}
+
+Fix an SBS reference state $\sigma_{S\cE}$ of the form \eqref{eq:sbs} with $\cX=\{0,1\}$.
+For any fragment set $A\subseteq\{1,\dots,N\}$, let
+\[
+\sigma^{(x)}_{A}:=\bigotimes_{k\in A}\sigma^{(x)}_{\cE_k}
+\]
+denote the conditional state of the accessible environment.
+
+The observer first applies $\Lambda_O$ to each accessed fragment and then performs an optimal measurement to decide $x$.
+This induces a binary quantum hypothesis testing problem:
+\[
+H_0:\;\rho_A=\bigotimes_{k\in A}\Lambda_O(\sigma^{(0)}_{\cE_k}),
+\qquad
+H_1:\;\rho_A=\bigotimes_{k\in A}\Lambda_O(\sigma^{(1)}_{\cE_k}).
+\]
+
+\subsection{Quantum Chernoff bound and tight redundancy scaling}
+
+Define the (binary) quantum Chernoff coefficient for a pair of states $\rho,\sigma$:
+\[
+\QCBcoef(\rho,\sigma):=\min_{s\in[0,1]}\mathrm{Tr}\left[\rho^s\sigma^{1-s}\right],
+\]
+and the associated Chernoff exponent
+\[
+\QCBdist(\rho,\sigma):=-\log \QCBcoef(\rho,\sigma).
+\]
+The quantum Chernoff bound states that for discriminating $\rho^{\otimes n}$ vs $\sigma^{\otimes n}$ with equal priors, the optimal error decays with exponent $\QCBdist(\rho,\sigma)$ \citep{Audenaert2007,NussbaumSzkola2009}.
+
+We use a finite-$n$ inequality that is convenient for sample-complexity statements.
+
+\begin{theorem}[Finite-$n$ Chernoff upper bound]
+\label{thm:chernoff-upper}
+Let $\rho,\sigma$ be density operators and consider equal priors on $H_0:\rho$ and $H_1:\sigma$.
+Then the optimal Bayes error obeys
+\begin{equation}
+P_e^\star(\rho,\sigma)\le \tfrac12\, \QCBcoef(\rho,\sigma).
+\label{eq:pe-qcb}
+\end{equation}
+Consequently, for product states over a fragment set $A$,
+\[
+P_e^\star\!\left(\bigotimes_{k\in A}\rho_k,\bigotimes_{k\in A}\sigma_k\right)
+\le \tfrac12 \min_{s\in[0,1]} \prod_{k\in A}\mathrm{Tr}\!\left[\rho_k^s\sigma_k^{1-s}\right].
+\]
+\end{theorem}
+
+\begin{proof}
+Inequality \eqref{eq:pe-qcb} is a standard consequence of the Audenaert et al.\ bound and is commonly stated as $P_e^\star(\rho,\sigma)\le \tfrac12 \min_{s\in[0,1]}\mathrm{Tr}[\rho^s\sigma^{1-s}]$ \citep{Audenaert2007}.
+The product form follows from multiplicativity of the trace under tensor products.
+\end{proof}
+
+\begin{definition}[Observer-effective Chernoff exponent on a fragment set]
+\label{def:xiA}
+For an observer $O$ and fragment set $A$, define
+\begin{equation}
+\QCBdist_O(A):=
+\max_{s\in[0,1]}\left(-\sum_{k\in A}\log \mathrm{Tr}\!\left[\Lambda_O(\sigma^{(0)}_{\cE_k})^s\,\Lambda_O(\sigma^{(1)}_{\cE_k})^{1-s}\right]\right).
+\label{eq:xiA}
+\end{equation}
+\end{definition}
+
+\begin{proposition}[Access threshold as an information budget]
+\label{prop:access-threshold}
+Fix an error target $\delta\in(0,\tfrac12)$ and an SBS reference experiment.
+If an observer can access at most $m_{\max}=\lfloor R_O N\rfloor$ fragments, then a sufficient condition for $\delta$-decoding of the pointer value is the existence of a set $A$ with $|A|\le m_{\max}$ such that
+\[
+\QCBdist_O(A)\ge \log\!\left(\frac{1}{2\delta}\right).
+\]
+\end{proposition}
+
+\begin{proof}
+By Theorem~\ref{thm:chernoff-upper},
+$P_e^\star(A)\le \tfrac12 \exp(-\QCBdist_O(A))$.
+If $\QCBdist_O(A)\ge \log(1/(2\delta))$, then $P_e^\star(A)\le \delta$.
+\end{proof}
+
+\subsection{Calibration as distinguishability contraction}
+
+A central point for ``non-ideal observers'' is that calibration noise cannot improve distinguishability.
+For the Chernoff coefficient, this is a data-processing statement.
+
+\begin{theorem}[Calibration degrades Chernoff distinguishability]
+\label{thm:chernoff-dpi}
+Let $\Lambda$ be a CPTP map and $\rho,\sigma$ quantum states.
+For every $s\in[0,1]$,
+\[
+\mathrm{Tr}\!\left[\Lambda(\rho)^s\Lambda(\sigma)^{1-s}\right]
+\;\ge\;
+\mathrm{Tr}\!\left[\rho^s\sigma^{1-s}\right].
+\]
+Equivalently, $\QCBcoef(\Lambda(\rho),\Lambda(\sigma))\ge \QCBcoef(\rho,\sigma)$ and therefore
+\[
+\QCBdist(\Lambda(\rho),\Lambda(\sigma))\le \QCBdist(\rho,\sigma).
+\]
+\end{theorem}
+
+\begin{proof}
+For $s\in(0,1)$, define the Petz-R\'enyi divergence
+$D_s(\rho\|\sigma)=\frac{1}{s-1}\log \mathrm{Tr}[\rho^s\sigma^{1-s}]$.
+For $s\in(0,1)$ this divergence satisfies the data-processing inequality
+$D_s(\Lambda(\rho)\|\Lambda(\sigma))\le D_s(\rho\|\sigma)$ under CPTP maps \citep{Petz1986,MosonyiOgawa2015,Tomamichel2016}.
+Rearranging yields the claimed inequality for $\mathrm{Tr}[\cdot]$.
+The endpoint cases $s=0,1$ follow by continuity.
+\end{proof}
+
+\section{$\varepsilon$-SBS robustness of decision rules}
+
+The point of an explicit trace-distance SBS approximation is that it immediately controls \emph{any} decision procedure via data processing.
+
+\begin{lemma}[Decision-theoretic continuity under trace distance]
+\label{lem:decision-cont}
+Let $\rho$ and $\sigma$ be two states on the same Hilbert space and let $\mathsf{Dec}$ be any (possibly adaptive) measurement-plus-decision procedure outputting a discrete hypothesis $\widehat{X}$.
+Then
+\[
+\left|\Prob_\rho(\widehat{X}\neq X)-\Prob_\sigma(\widehat{X}\neq X)\right|
+\le \Dtr(\rho,\sigma).
+\]
+\end{lemma}
+
+\begin{proof}
+A measurement-plus-decision procedure is a CPTP map from states to a classical distribution on $\widehat{X}$.
+Trace distance contracts under CPTP maps, so the total variation distance between the induced classical distributions is bounded by $\Dtr(\rho,\sigma)$ \citep{Watrous2018}.
+The error event $\{\widehat{X}\neq X\}$ is a measurable subset of outcomes, hence its probability differs by at most the total variation distance.
+\end{proof}
+
+\begin{theorem}[$\varepsilon$-robust Chernoff sample complexity]
+\label{thm:eps-robust}
+Let $\rho_{S\cE}$ be $\varepsilon$-SBS with witness $\sigma_{S\cE}$.
+Fix a fragment set $A$ and an observer $O$.
+Let $\delta\in(0,\tfrac12)$ be a target error under the \emph{actual} state $\rho$.
+
+If $\QCBdist_O(A)\ge \log\!\left(\frac{1}{2(\delta-\varepsilon)}\right)$ and $\delta>\varepsilon$, then there exists a decision procedure on $A$ (namely the optimal decoder for the witness experiment) such that
+\[
+\Prob_{\rho}(\widehat{X}\neq X)\le \delta.
+\]
+\end{theorem}
+
+\begin{proof}
+Apply Proposition~\ref{prop:access-threshold} to the witness state $\sigma$: with the given $\QCBdist_O(A)$, there exists a decoder achieving
+$\Prob_{\sigma}(\widehat{X}\neq X)\le \delta-\varepsilon$.
+Then Lemma~\ref{lem:decision-cont} gives
+$\Prob_{\rho}(\widehat{X}\neq X)\le (\delta-\varepsilon)+\varepsilon=\delta$.
+\end{proof}
+
+\section{Local versus collective decoding: scope and a useful special case}
+\label{sec:local-vs-global}
+
+Observer temporal limitations often restrict \emph{which measurements are feasible}.
+A common distinction is between collective measurements across $m$ fragments (which may require preserving quantum coherence across acquisition and decoding) and individual/product strategies (measuring each fragment immediately).
+
+It is important to separate (i) what is true for \emph{optimal} individual (non-entangling) strategies and (ii) what is true under additional local readout restrictions.
+
+\begin{proposition}[No universal exponent gap for two pure hypotheses]
+\label{prop:no-gap-pure}
+Let $\ket{\psi_0}$ and $\ket{\psi_1}$ be two pure states with overlap $c:=|\braket{\psi_0}{\psi_1}|\in(0,1)$.
+For discriminating $m$ copies with equal priors, there exist individual (non-entangling) measurement strategies whose error exponent matches the collective optimum, and adaptive individual strategies can match the exact multi-copy Helstrom error for every $m$ \cite{AcinBaganBaigMasanesMunozTapia2005}.
+\end{proposition}
+
+\begin{remark}[A simple fixed individual measurement achieving the collective Chernoff exponent]
+Projecting each copy onto the basis $\{\ket{\psi_0},\ket{\psi_0^\perp}\}$ and deciding ``1'' if any $\ket{\psi_0^\perp}$ outcome occurs yields Bayes error $P_e=\tfrac12 c^{2m}$.
+This achieves the collective Chernoff exponent $-\log(c^{2})$ (though not the optimal finite-$m$ prefactor).
+\end{remark}
+
+Although there is no \emph{unconditional} exponent separation between product and collective measurements for two pure hypotheses, the situation is richer for mixed-state hypotheses or more than two hypotheses, where \emph{strict} exponent separations can persist even for optimal local strategies \cite{CalsamigliaMunozTapia2010,OwariHayashi2008}.
+In the pure-state binary case, a constant-factor penalty does arise for certain widely used local readouts.
+One example is repeated application of the \emph{single-copy Helstrom measurement} (the Bayes-optimal measurement for one copy) followed by optimal classical postprocessing.
+
+\begin{corollary}[Factor-of-two penalty for repeated single-copy Helstrom readout on pure records]
+\label{cor:helstrom-penalty}
+\label{cor:factor-two-gap}
+Let $\ket{\psi_0},\ket{\psi_1}$ be pure with overlap $c\in(0,1)$ and equal priors.
+If the observer measures each copy using the single-copy Helstrom POVM and then performs the optimal classical decision rule on the $m$ outcomes, the achieved Chernoff exponent equals $-\log c$ per copy.
+By contrast, collective decoding achieves exponent $-\log(c^2)$ per copy.
+Thus, under this \emph{fixed local readout restriction}, the collective exponent is exactly twice the Helstrom-repeated exponent.
+\end{corollary}
+
+\begin{proof}
+For a single copy, the Helstrom-optimal Bayes error for two pure states with overlap $c$ (equal priors) is
+$P_e^{(1)}=\tfrac12\bigl(1-\sqrt{1-c^2}\bigr)$.
+The Helstrom measurement produces a symmetric binary channel with conditional outcome distributions
+$[1-P_e^{(1)},P_e^{(1)}]$ and $[P_e^{(1)},1-P_e^{(1)}]$.
+For such symmetric binary distributions, the classical Chernoff coefficient is attained at $s=1/2$ and equals
+$2\sqrt{P_e^{(1)}(1-P_e^{(1)})}=c$.
+Thus the achievable product-measurement Chernoff exponent equals $-\log c$ per copy.
+Collective decoding attains the quantum Chernoff exponent $-\log(c^2)$ per copy for pure states.
+\end{proof}
+
+\begin{remark}[Interpretation for observer quality]
+Temporal limits (small $\tau_O$) can motivate immediate per-fragment readout.
+However, for two pure hypotheses, optimal individual strategies can still match collective exponents (Proposition~\ref{prop:no-gap-pure}).
+Therefore, any performance gap must be attributed to additional observer constraints (e.g., fixed calibration/readout choices such as repeated single-copy Helstrom measurements), not to ``locality'' alone.
+\end{remark}
+
+\section{Worked physical model: central-spin pure dephasing}
+\label{sec:centralspin}
+
+We now provide a concrete open-system model and compute $(R_O,C_O,\tau_O)$ in terms of physical parameters.
+
+\subsection{Model}
+
+Let $S$ be a qubit with pointer basis the eigenbasis of $\sigma_z^S$.
+Let the environment consist of $N$ qubits with $\sigma_z^{(k)}$.
+Consider the pure-dephasing Hamiltonian
+\begin{equation}
+H = \sigma_z^S \otimes \sum_{k=1}^N g_k \sigma_z^{(k)},
+\label{eq:centralspin-H}
+\end{equation}
+and initial environment state $\ket{+}^{\otimes N}$ with $\ket{+}=(\ket{0}+\ket{1})/\sqrt{2}$.
+Conditioned on the pointer value $x\in\{0,1\}$ (eigenvalues $\pm1$ of $\sigma_z^S$), fragment $k$ evolves to a pure state
+\[
+\ket{\phi_k^{(x)}(t)} = e^{\mp i g_k t \sigma_z}\ket{+},
+\]
+so that the single-fragment overlap is
+\begin{equation}
+c_k(t):=\left|\braket{\phi_k^{(0)}(t)}{\phi_k^{(1)}(t)}\right|=\left|\cos(2 g_k t)\right|.
+\label{eq:ck}
+\end{equation}
+This model (and its variants) is standard in decoherence theory and is directly connected to SBS formation in spin environments \citep{KorbiczReview2021,RoszakKorbicz2019}.
+
+\subsection{Exact Chernoff exponent and fragment requirement}
+
+For pure states, the Chernoff coefficient equals the fidelity:
+\[
+\QCBcoef\left(\ket{\phi_k^{(0)}(t)},\ket{\phi_k^{(1)}(t)}\right)=c_k(t)^2,
+\qquad
+\QCBdist_k(t)=-\log c_k(t)^2.
+\]
+For a set $A$ of accessed qubits,
+\begin{equation}
+\QCBdist(A;t)=\sum_{k\in A} -\log\left(\cos^2(2 g_k t)\right),
+\label{eq:xi-centralspin}
+\end{equation}
+and Theorem~\ref{thm:chernoff-upper} implies
+\[
+P_e^\star(A;t)\le \tfrac12 \exp\!\left(-\QCBdist(A;t)\right).
+\]
+Thus a sufficient condition for error $\le\delta$ is $\QCBdist(A;t)\ge \log(1/(2\delta))$.
+
+\subsection{Mapping to observer parameters}
+
+\paragraph{Access fraction $R_O$.}
+In a laboratory implementation, an observer may only intercept a fraction of environment qubits (geometric coverage, detector efficiency, spatial range).
+If $m_{\max}$ qubits are accessible per trial out of $N$, then $R_O=m_{\max}/N$.
+
+\paragraph{Calibration $C_O$.}
+Suppose the observer's instrument applies a depolarizing channel on each accessed environment qubit:
+$\Lambda_p(\rho)=(1-p)\rho+p\frac{\1}{2}$, capturing miscalibration or noise before readout.
+For any two qubit states, depolarization contracts trace distance by a factor $(1-p)$ \citep{Watrous2018}.
+For the central-spin conditional pure states, the single-copy Helstrom success probability becomes
+\[
+C_O(t)=\tfrac12\left(1+(1-p)\sqrt{1-c_k(t)^2}\right)
+=\tfrac12\left(1+(1-p)|\sin(2 g_k t)|\right),
+\]
+where we used $c_k(t)=|\cos(2 g_k t)|$.
+If couplings differ, $C_O(t)$ varies with $k$ and can be summarized by a worst-case or average calibration across accessible fragments.
+
+\paragraph{Temporal horizon $\tau_O$.}
+If the observer performs collective decoding across $m$ fragments, a quantum memory must preserve coherence for at least the acquisition time of those $m$ qubits plus the decoding time.
+Let $t_{\mathrm{meas}}$ be the per-qubit acquisition time.
+A minimal feasibility constraint is $\tau_O \gtrsim m\,t_{\mathrm{meas}}$.
+Additionally, the pointer value must remain stable over the acquisition interval, typically limited by system relaxation times (e.g., $T_1$) \citep{BreuerPetruccione2002,Schlosshauer2007}.
+In this model, we treat stability as an explicit constraint rather than imposing an unjustified ``exponential stability'' assumption.
+
+\subsection{Numerical illustration and reproducibility}
+
+The accompanying repository includes a script that samples couplings $\{g_k\}$, computes $\QCBdist(A;t)$ for the best accessible subset under an access fraction $R_O$, and plots redundancy as a function of time $t$.
+This is included to make the ``worked example'' fully reproducible. Figure~\ref{fig:centralspin-red} shows a typical redundancy profile as a function of interaction time in this toy model.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.95\linewidth]{central_spin_redundancy_vs_time.pdf}
+\caption{Central-spin toy model (Sec.~\ref{sec:centralspin}): redundancy (accessible copies) versus interaction time $t$ for a sampled distribution of couplings $\{g_k\}$, access fraction $R_O=0.25$, and target decoding error $\delta=10^{-3}$. The curve is produced by the reproducibility script in the repository.}
+\label{fig:centralspin-red}
+\end{figure}
+
+\section{DLN-series connection}
+\label{sec:dln-brief}
+
+The DLN instantiation developed in Sec.~\ref{sec:qstates} imports the
+two formal objects of the DLN compression model---the belief-dependency
+graph~$G$ and the revision graph~$\mathcal{R}$---and shows that they
+specialize to the QD/SBS setting without modification:
+$G$ is the conditional-independence DAG of the SBS state
+(Proposition~\ref{prop:sbs-dag}), and
+$\mathcal{R}$ is the directed graph of physically realizable transitions
+between measurement strategies
+(Definition~\ref{def:revision-qd}).
+
+The quantitative results of this paper fill in the \emph{physics content}
+of each DLN stage in the quantum setting.
+The factor-of-two exponent gap
+(Proposition~\ref{prop:tight-gap}) is the QD expression of the
+$O(F)$-vs-$O(K)$ compression thesis of
+\citep[Proposition~1(i)]{WuDLNCompression2026preprint},
+and the bounded-recovery result
+(Proposition~\ref{prop:recovery-qd}) is the QD expression of the
+return-transition mechanism of
+\citep[Proposition~1(iii)]{WuDLNCompression2026preprint}.
+
+We emphasize three points regarding scope:
+\begin{enumerate}[leftmargin=2em]
+\item The quantitative claims (Chernoff sample complexity, calibration
+  contraction, $\varepsilon$-robustness) are self-contained and do not
+  presuppose any developmental or cognitive interpretation of DLN.
+\item The DLN framework provides the \emph{structural classification}
+  (which decoder topology) and the \emph{revision formalism} (when the
+  observer switches); the present paper provides the \emph{quantitative
+  content} (error exponents, fragment counts, robustness bounds) that
+  populates each cell of that classification in a physical setting.
+\item The treatment of non-stationary observation protocols---where
+  $\mathcal{R}$-transitions are exercised in response to changing
+  decoherence conditions---and connections to adaptive quantum
+  metrology are deferred to subsequent work.
+\end{enumerate}
+
+\section{Inverted sophistication: when collective decoding underperforms}
+\label{sec:inverted-sophistication}
+
+The decoder hierarchy $\mathsf{Dec}_L \subsetneq \mathsf{Dec}_N$ (Definition~\ref{def:q-states}) guarantees that the \emph{optimal} collective POVM achieves error no larger than the optimal product measurement.
+However, if an observer deploys a collective decoder \emph{without monitoring coherence conditions}, decoherence during measurement can cause the collective strategy to underperform product decoding---an effect we call \emph{inverted sophistication}.
+
+\subsection{Binary coherence-loss model}
+
+Model the observer's coherence reliability as follows.
+In each observation episode, with probability $f_{\mathrm{coh}}$ coherence is maintained and the collective POVM succeeds (error $P_e^{\mathrm{coll}}$); with probability $1-f_{\mathrm{coh}}$ coherence fails and the measurement output is uninformative ($P_e = \tfrac{1}{2}$).
+The effective error of an unmonitored collective decoder is then
+\begin{equation}
+P_e^{\mathrm{unmon}}(m) = f_{\mathrm{coh}}\, P_e^{\mathrm{coll}}(m) + (1-f_{\mathrm{coh}})\,\tfrac{1}{2}.
+\label{eq:unmonitored}
+\end{equation}
+For large $m$, $P_e^{\mathrm{coll}}(m)\to 0$ exponentially, so $P_e^{\mathrm{unmon}} \to (1-f_{\mathrm{coh}})/2$---a constant floor.
+Meanwhile, the product decoder's error $P_e^{\mathrm{prod}}(m) = \tfrac{1}{2}e^{-\xi_{\mathrm{L}} m}$ continues to decrease.
+Thus for any $f_{\mathrm{coh}}<1$, there exists a critical fragment count $m^*$ above which the product decoder achieves strictly lower error than the unmonitored collective decoder.
+
+Equating $P_e^{\mathrm{prod}}(m)$ with $P_e^{\mathrm{unmon}}(m)$ yields the critical coherence fraction below which inversion occurs at fragment count $m$:
+\begin{equation}
+f^*(m) = \frac{P_e^{\mathrm{prod}}(m) - \tfrac{1}{2}}{P_e^{\mathrm{coll}}(m) - \tfrac{1}{2}}.
+\label{eq:f-star}
+\end{equation}
+Since $P_e^{\mathrm{coll}}$ decays faster than $P_e^{\mathrm{prod}}$ by the factor-of-two exponent gap (Corollary~\ref{cor:factor-two-gap}), $f^*(m)\to 1$ as $m\to\infty$: the coherence margin required for unmonitored collective decoding to remain competitive shrinks to zero.
+
+\subsection{Robustness across decoherence models}
+
+The binary success/failure model above is the harshest form of observer-side decoherence.  Two alternative models bracket realistic behavior:
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Continuous exponent degradation.}  Instead of binary collapse, coherence loss degrades the effective exponent continuously: $P_e = \tfrac{1}{2}e^{-f_{\mathrm{coh}}\,\xi_{\mathrm{N}} m}$.  Inversion occurs at a model-independent threshold $f^* = \tfrac{1}{2}$, independent of $m$.
+
+\item \textbf{System-side depolarization.}  If the fragment states themselves become mixed (each conditional state replaced by $f_{\mathrm{coh}}\,\ket{\phi_k^{(x)}}\!\bra{\phi_k^{(x)}} + (1-f_{\mathrm{coh}})\,\tfrac{I}{2}$), both collective and product decoders degrade symmetrically.  No inversion occurs: the collective advantage persists for all $f_{\mathrm{coh}}>0$.
+\end{itemize}
+
+\noindent
+The physical conclusion is that inverted sophistication requires \emph{observer-side} decoherence (apparatus-level coherence failure), not \emph{system-side} decoherence (environmental noise on the fragment states).  This distinction maps directly onto the DLN revision-graph transitions of Sec.~\ref{sec:dln-brief}: the $\mathsf{Dec}_N\to\mathsf{Dec}_L$ downgrade triggered by coherence loss (L2.1) is precisely the scenario where inverted sophistication arises, and the monitoring protocol (L2.2--L2.3) restores the ability to adaptively choose the better decoder.
+
+\subsection{Central-spin illustration}
+
+Figure~\ref{fig:inverted-sophistication} illustrates the binary model for the central-spin parameters of Sec.~\ref{sec:centralspin}.
+The left panel shows that at $f_{\mathrm{coh}}=0.9$ the unmonitored collective decoder's error saturates at a floor of~$0.05$, while the product decoder continues to improve.
+The right panel shows $1-f^*$ versus~$m$: the coherence margin collapses exponentially, meaning that even $99.99\%$ coherence reliability is insufficient at large~$m$.
+
+\begin{figure}[t]\centering
+\includegraphics[width=0.95\linewidth]{inverted_sophistication_crossover.pdf}
+\caption{Inverted sophistication in the central-spin model.
+\emph{Left:} Error probability vs.\ fragment count $m$ for product decoding ($\mathsf{Dec}_L$, solid blue) and unmonitored collective decoding ($\mathsf{Dec}_N$, dashed) at three coherence fractions.
+At $f_{\mathrm{coh}}<1$, the unmonitored collective error saturates at $(1-f_{\mathrm{coh}})/2$ while $\mathsf{Dec}_L$ continues to improve.
+\emph{Right:} Required coherence margin $1-f^*$ vs.\ $m$ (log scale).
+Above the curve (pink region), the product decoder achieves lower error; below (blue region), unmonitored collective decoding wins.
+The margin collapses exponentially with~$m$.}
+\label{fig:inverted-sophistication}
+\end{figure}
+
+\section{Discussion: tightness, limitations, and relation to prior work}
+
+We highlight three points relevant for interpreting the bounds and comparing to prior work:
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Mathematical depth:} the main redundancy bound is phrased in terms of Chernoff-optimal decoding \citep{Audenaert2007,NussbaumSzkola2009} and explicitly incorporates calibration via a CPTP contraction theorem (Thm.~\ref{thm:chernoff-dpi}) and $\varepsilon$-SBS perturbations (Thm.~\ref{thm:eps-robust}).
+The local-vs-collective decoding gap (Cor.~\ref{cor:factor-two-gap}) links temporal constraints to a provable reduction in error exponent.
+\item \textbf{Prior work:} we explicitly compare to hazy environments \citep{ZwolakQuanZurek2009}, photon redundancy \citep{RiedelZurek2010,RiedelZurek2011}, generic objectivity \citep{BrandaoPianiHorodecki2015,Knott2018}, and accessible-information approaches \citep{Touil2022}.
+\item \textbf{Concrete physical model:} Sec.~\ref{sec:centralspin} gives a full worked open-system example computing fragment overlaps and Chernoff exponents from Hamiltonian parameters.
+\item \textbf{DLN connection:} condensed to Sec.~\ref{sec:dln-brief}.
+\end{itemize}
+
+\paragraph{Scope and limitations.}
+Several directions lie beyond the present analysis.
+(i)~All sample-complexity bounds are stated for a \emph{binary} pointer alphabet $\cX=\{0,1\}$; multi-hypothesis extensions require different Chernoff-type bounds and the factor-of-two exponent identity does not generalize straightforwardly.
+(ii)~The central-spin model produces pure-state fragment records by construction (pure dephasing, no $T_1$ relaxation or system--environment back-action beyond decoherence).
+For mixed-state records---which are generic in realistic settings such as spin-boson models with loss or photon scattering at finite temperature---the collective/product exponent ratio lies in $[1,2]$ and its precise dependence on non-commutativity remains open (Remark~\ref{rem:mixed-state-gap}).
+(iii)~The inverted sophistication threshold is quantitatively model-dependent: the binary observer-decoherence model (Model~A) predicts $f^*\to 1$ exponentially in $m$, while the continuous model (Model~B) gives $f^*=1/2$ independently of $m$.
+Model~B may be more physically representative in many experimental settings, and the binary model should be understood as an upper bound on the severity of the inversion effect.
+(iv)~No experimental platform is analyzed in detail; connecting the observer-quality triple to specific detector architectures (e.g., NV centers, trapped ions, photonic QD setups) is an important next step for empirical validation.
+
+\section{Conclusion}
+
+Observer modeling is a structural gap in much of the QD/SBS literature.
+By treating the observer as a resource-constrained agent with explicit access, calibration, and temporal horizons, we obtain quantitative, decoder-level statements about redundancy and objectivity that remain stable under $\varepsilon$-SBS trace-distance approximations.
+The central-spin worked example demonstrates how these parameters can be computed from physical couplings and instrument noise, enabling model-to-experiment predictions.
+The factor-of-two exponent gap between local and collective decoding provides a sharp and testable link between temporal observer constraints and the emergence of objectivity.
+Moreover, the inverted-sophistication analysis (Sec.~\ref{sec:inverted-sophistication}) shows that this link is fragile in practice: an unmonitored collective decoder can be strictly outperformed by product decoding when apparatus-level coherence reliability falls below a critical threshold that shrinks exponentially with fragment count, underscoring the necessity of coherence monitoring in the DLN revision-graph framework.
+
+\bibliographystyle{unsrtnat}
+\bibliography{paper4a_observer_quality_major_revision}
+
+\end{document}

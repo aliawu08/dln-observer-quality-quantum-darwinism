@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite the accompanying manuscript."
+title: "Observer Quality as a Resource Variable in Quantum Darwinism: Optimal Decoding, ε-Approximate Spectrum Broadcast Structure, and a Central-Spin Worked Example"
+type: software
+authors:
+  - family-names: Wu
+    given-names: Alia
+    email: wut08@nyu.edu
+    affiliation: "Risk Efficacy & Redline Rising"
+    orcid: "https://orcid.org/0009-0005-4424-102X"
+date-released: "2026-02-07"
+license:
+  - MIT
+  - CC-BY-4.0
+repository-code: "https://github.com/aliawu08/observer-quality-quantum-darwinism"
+keywords:
+  - quantum darwinism
+  - spectrum broadcast structure
+  - observer quality
+  - quantum foundations
+  - hypothesis testing
+  - quantum chernoff bound
+  - dot-linear-network
+  - factor graph
+  - reproducibility

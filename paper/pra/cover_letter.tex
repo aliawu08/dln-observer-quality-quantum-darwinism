@@ -1,0 +1,75 @@
+\documentclass[11pt]{letter}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+\signature{Alia Wu\\Risk Efficacy \& Redline Rising\\wut08@nyu.edu}
+\date{\today}
+
+\begin{document}
+\begin{letter}{Editorial Office\\Physical Review A\\American Physical Society}
+
+\opening{Dear Editors,}
+
+I am submitting the manuscript ``Observer Quality as a Resource Variable in
+Quantum Darwinism: Optimal Decoding, $\varepsilon$-Approximate Spectrum
+Broadcast Structure, and a Central-Spin Worked Example'' for consideration
+as a Regular Article in Physical Review~A.
+
+This paper addresses a gap in the quantum Darwinism (QD) and spectrum
+broadcast structure (SBS) literature: existing analyses typically treat
+observers as ideal, with perfect access, noiseless readout, and unlimited
+temporal horizons.  We introduce an explicit observer-quality triple
+$(R_O,\Lambda_O,\tau_O)$ encoding access fraction, calibration noise, and
+temporal horizon, and propagate these constraints through sample-complexity
+bounds for pointer-value inference.  The main technical results are
+Chernoff-type decoding bounds under calibration, a data-processing theorem
+showing calibration cannot increase the quantum Chernoff exponent, and
+$\varepsilon$-robust upgrades from ideal to approximate SBS with explicit
+additive error control.  A central-spin pure-dephasing example demonstrates
+the framework with quantities computed from Hamiltonian couplings and
+depolarizing readout noise, including robustness checks against coupling
+heterogeneity and access assumptions.
+
+Two aspects of this work may be of particular interest to PRA readers.
+First, the inverted sophistication result (Section~VI\,E) shows that an
+unmonitored collective decoder can be strictly outperformed by product
+decoding when coherence reliability falls below a critical threshold, with
+the inversion requiring observer-side rather than system-side decoherence.
+This is a counterintuitive consequence of the factor-of-two exponent gap
+between collective and product measurements for pure-state binary
+hypotheses.  Second, the paper introduces a decoder-stage classification
+($q_D$/$q_L$/$q_N$) that connects observer measurement constraints to the
+Dot/Linear/Network (DLN) framework developed in a companion preprint; the
+PRA paper is self-contained and does not require familiarity with DLN.
+
+The scope is deliberately restricted to binary pointer alphabets and
+pure-state fragment records.  Mixed-state extensions and multi-hypothesis
+generalizations are noted in the text but deferred to future work.
+
+All numerical code and figure-generation scripts are publicly available at
+\url{https://github.com/aliawu08/dln-observer-quality-quantum-darwinism}
+and archived at Zenodo (DOI:~10.5281/zenodo.18610548).  This paper has not
+been submitted elsewhere.
+
+\textbf{Suggested referees.}  Given the paper's intersection of quantum
+Darwinism, spectrum broadcast structure, and quantum hypothesis testing,
+the following colleagues are well placed to evaluate it:
+%
+\begin{enumerate}
+\item \textbf{Jaros\l{}aw K.~Korbicz} (University of Gda\'nsk) ---
+    leading contributor to SBS theory and author of a recent comprehensive
+    review of quantum Darwinism and SBS.
+\item \textbf{Kamil Roszak} (Wroc\l{}aw University of Science and
+    Technology) --- expert on entanglement and objectivity in pure-dephasing
+    spin models, closely related to our central-spin worked example.
+\item \textbf{Akram Touil} (University of Maryland / Los Alamos National
+    Laboratory) --- recent work on operational approaches to quantum
+    Darwinism emphasizing accessible information.
+\item \textbf{Thao P.~Le} (University of Melbourne) --- contributor to the
+    formal equivalence between strong quantum Darwinism and SBS.
+\end{enumerate}
+
+\closing{Sincerely,}
+
+\end{letter}
+\end{document}

@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.blg
+*.bbl
+*Notes.bib
+
+# Figures generated
+
+# macOS
+.DS_Store
+
+# Pytest
+.pytest_cache/

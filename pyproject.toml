@@ -1,0 +1,14 @@
+[project]
+name = "observer-quality-quantum-darwinism"
+version = "0.1.0"
+description = "Reproducibility package for 'Observer Quality as a Resource Variable in Quantum Darwinism'"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy==1.24.0",
+  "matplotlib==3.7.5",
+  "pytest==8.2.2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
