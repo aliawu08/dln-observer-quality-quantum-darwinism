@@ -1,6 +1,6 @@
 # Convenience targets for building the papers, reproducing figures, and running checks.
 
-.PHONY: preprint pra figs test clean install check
+.PHONY: preprint pra fop figs test clean install check
 
 install:
 	python -m pip install --upgrade pip
@@ -20,6 +20,12 @@ pra:
 	cd paper/pra && pdflatex -interaction=nonstopmode paper4a_observer_quality_major_revision_PRA_revtex.tex
 	cd paper/pra && pdflatex -interaction=nonstopmode paper4a_observer_quality_major_revision_PRA_revtex.tex
 
+fop:
+	cd paper/fop && pdflatex -interaction=nonstopmode paper4a_observer_quality_fop.tex
+	cd paper/fop && /usr/bin/bibtex.original paper4a_observer_quality_fop
+	cd paper/fop && pdflatex -interaction=nonstopmode paper4a_observer_quality_fop.tex
+	cd paper/fop && pdflatex -interaction=nonstopmode paper4a_observer_quality_fop.tex
+
 PRA_FIGS := central_spin_redundancy_vs_time.pdf \
             central_spin_m_required_vs_time.pdf \
             central_spin_robustness_vs_p.pdf \
@@ -28,12 +34,16 @@ PRA_FIGS := central_spin_redundancy_vs_time.pdf \
 PREPRINT_FIGS := central_spin_redundancy_vs_time.pdf \
                  inverted_sophistication_crossover.pdf
 
+FOP_FIGS := central_spin_redundancy_vs_time.pdf \
+            inverted_sophistication_crossover.pdf
+
 figs:
 	SOURCE_DATE_EPOCH=0 python scripts/central_spin_example.py
 	SOURCE_DATE_EPOCH=0 python -m scripts.dynamical_redundancy
 	# copy only the figures each paper variant actually references
 	$(foreach f,$(PREPRINT_FIGS),cp figures/$(f) paper/preprint/;)
 	$(foreach f,$(PRA_FIGS),cp figures/$(f) paper/pra/;)
+	$(foreach f,$(FOP_FIGS),cp figures/$(f) paper/fop/;)
 
 test:
 	pytest -q
